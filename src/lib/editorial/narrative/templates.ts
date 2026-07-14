@@ -56,9 +56,10 @@ export const POSITIONING: TemplateBlock = {
 
 export const DRIVERS: TemplateBlock = {
   variants: [
-    "A sua posição é explicada sobretudo por {topDriver1} e {topDriver2}, os fatores que mais contribuem para o Score final.",
-    "Destacam-se, entre os principais contribuintes, {topDriver1} e {topDriver2}.",
-    "Os grandes responsáveis por esta pontuação são {topDriver1} e {topDriver2}.",
+    "A leitura do desempenho não passa por um único traço: é a combinação entre {topDriver1} e {topDriver2} que sustenta o patamar atual e explica por que razão a avaliação se distancia da média.",
+    "Mais do que qualquer indicador isolado, o peso de {topDriver1} associado a {topDriver2} desenha um perfil coerente, com pontos de apoio bem definidos.",
+    "Onde muitos dependem de um só ponto forte, aqui a solidez nasce do cruzamento entre {topDriver1} e {topDriver2}, o que dá previsibilidade ao rendimento.",
+    "{topDriver1} é o traço mais evidente, mas seria injusto ignorar como {topDriver2} funciona como segundo eixo — sem ele, o retrato ficaria incompleto.",
   ],
 };
 
