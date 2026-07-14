@@ -124,6 +124,25 @@ function Dashboard() {
     ];
   }, [derived, lastImport]);
 
+  // Static block definitions — declared before any early return so
+  // useDashboardLayout is always called in the same order (rules of hooks).
+  const BLOCKS: DashboardBlockDef[] = useMemo(
+    () => [
+      { id: "kpis", label: "Visão Geral · KPIs" },
+      { id: "summary", label: "Resumo da Época & Destaques" },
+      { id: "narrative", label: "Leitura Editorial" },
+      { id: "market", label: "Mercado" },
+      { id: "alerts", label: "Alertas" },
+      { id: "quick-rankings", label: "Rankings Rápidos" },
+      { id: "top-scores", label: "Top Performers by Score" },
+      { id: "evolution", label: "Evolução & Insights" },
+      { id: "smart-imports", label: "Smart Profiles & Imports" },
+      { id: "quick-actions", label: "Ações Rápidas" },
+    ],
+    [],
+  );
+  const layout = useDashboardLayout(BLOCKS);
+
   if (!mounted || isLoading) {
     return (
       <div className="flex items-center justify-center py-32 text-muted-foreground">
@@ -153,21 +172,6 @@ function Dashboard() {
 
   const { ranks } = derived;
   const years = ranks.years;
-
-  const BLOCKS: DashboardBlockDef[] = [
-    { id: "kpis", label: "Visão Geral · KPIs" },
-    { id: "summary", label: "Resumo da Época & Destaques" },
-    { id: "narrative", label: "Leitura Editorial" },
-    { id: "market", label: "Mercado" },
-    { id: "alerts", label: "Alertas" },
-    { id: "quick-rankings", label: "Rankings Rápidos" },
-    { id: "top-scores", label: "Top Performers by Score" },
-    { id: "evolution", label: "Evolução & Insights" },
-    { id: "smart-imports", label: "Smart Profiles & Imports" },
-    { id: "quick-actions", label: "Ações Rápidas" },
-  ];
-
-  const layout = useDashboardLayout(BLOCKS);
 
   const blockContent: Record<string, React.ReactNode> = {
     kpis: (
