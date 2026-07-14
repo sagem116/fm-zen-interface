@@ -25,6 +25,7 @@ export type Database = {
           season_id: string
           season_ticket_holders: number | null
           season_year: number
+          updated_at: string
         }
         Insert: {
           avg_attendance?: number | null
@@ -36,6 +37,7 @@ export type Database = {
           season_id: string
           season_ticket_holders?: number | null
           season_year: number
+          updated_at?: string
         }
         Update: {
           avg_attendance?: number | null
@@ -47,6 +49,7 @@ export type Database = {
           season_id?: string
           season_ticket_holders?: number | null
           season_year?: number
+          updated_at?: string
         }
         Relationships: [
           {
@@ -103,7 +106,7 @@ export type Database = {
           club_id: string | null
           club_name: string | null
           club_role: string | null
-          coach_id: string | null
+          coach_id: string
           coach_name: string
           country_name: string | null
           cp: number | null
@@ -112,7 +115,7 @@ export type Database = {
           info: string | null
           intl_role: string | null
           intl_salary: number | null
-          module: string
+          module: Database["public"]["Enums"]["module_type"]
           rc: number | null
           rm: number | null
           salary: number | null
@@ -123,7 +126,7 @@ export type Database = {
           club_id?: string | null
           club_name?: string | null
           club_role?: string | null
-          coach_id?: string | null
+          coach_id: string
           coach_name: string
           country_name?: string | null
           cp?: number | null
@@ -132,7 +135,7 @@ export type Database = {
           info?: string | null
           intl_role?: string | null
           intl_salary?: number | null
-          module: string
+          module: Database["public"]["Enums"]["module_type"]
           rc?: number | null
           rm?: number | null
           salary?: number | null
@@ -143,7 +146,7 @@ export type Database = {
           club_id?: string | null
           club_name?: string | null
           club_role?: string | null
-          coach_id?: string | null
+          coach_id?: string
           coach_name?: string
           country_name?: string | null
           cp?: number | null
@@ -152,7 +155,7 @@ export type Database = {
           info?: string | null
           intl_role?: string | null
           intl_salary?: number | null
-          module?: string
+          module?: Database["public"]["Enums"]["module_type"]
           rc?: number | null
           rm?: number | null
           salary?: number | null
@@ -268,28 +271,28 @@ export type Database = {
           competition: string
           continent: string | null
           country: string | null
-          created_at: string
           id: string
-          reputation: number | null
-          season_year: number
+          reputation: number
+          season_year: number | null
+          updated_at: string
         }
         Insert: {
           competition: string
           continent?: string | null
           country?: string | null
-          created_at?: string
           id?: string
-          reputation?: number | null
-          season_year: number
+          reputation: number
+          season_year?: number | null
+          updated_at?: string
         }
         Update: {
           competition?: string
           continent?: string | null
           country?: string | null
-          created_at?: string
           id?: string
-          reputation?: number | null
-          season_year?: number
+          reputation?: number
+          season_year?: number | null
+          updated_at?: string
         }
         Relationships: []
       }
@@ -377,6 +380,7 @@ export type Database = {
       config_weights: {
         Row: {
           category: string
+          created_at: string
           id: string
           key: string
           profile_id: string
@@ -384,13 +388,15 @@ export type Database = {
         }
         Insert: {
           category: string
+          created_at?: string
           id?: string
           key: string
           profile_id: string
-          value: number
+          value?: number
         }
         Update: {
           category?: string
+          created_at?: string
           id?: string
           key?: string
           profile_id?: string
@@ -515,28 +521,28 @@ export type Database = {
           created_at: string
           filename: string | null
           id: string
-          module: string
+          module: Database["public"]["Enums"]["module_type"]
           season_id: string
           status: string
-          warnings: Json | null
+          warnings: Json
         }
         Insert: {
           created_at?: string
           filename?: string | null
           id?: string
-          module: string
+          module: Database["public"]["Enums"]["module_type"]
           season_id: string
           status?: string
-          warnings?: Json | null
+          warnings?: Json
         }
         Update: {
           created_at?: string
           filename?: string | null
           id?: string
-          module?: string
+          module?: Database["public"]["Enums"]["module_type"]
           season_id?: string
           status?: string
-          warnings?: Json | null
+          warnings?: Json
         }
         Relationships: [
           {
@@ -736,6 +742,7 @@ export type Database = {
           fouls_per90: number | null
           games: number | null
           gls: number | null
+          hdj: number | null
           id: string
           idu: string | null
           nationality: string | null
@@ -768,6 +775,7 @@ export type Database = {
           fouls_per90?: number | null
           games?: number | null
           gls?: number | null
+          hdj?: number | null
           id?: string
           idu?: string | null
           nationality?: string | null
@@ -800,6 +808,7 @@ export type Database = {
           fouls_per90?: number | null
           games?: number | null
           gls?: number | null
+          hdj?: number | null
           id?: string
           idu?: string | null
           nationality?: string | null
@@ -822,78 +831,71 @@ export type Database = {
       players: {
         Row: {
           age: number | null
-          ast: number | null
-          ca: number | null
+          ast: number
+          ca: number
           club_id: string | null
           club_name: string | null
-          cp: number | null
+          cp: number
           created_at: string
-          gls: number | null
+          gls: number
           id: string
           idu: string | null
           info: string | null
           league: string | null
           module: string
           name: string
-          ra: number | null
+          ra: number
           rec: string | null
-          rm: number | null
-          salary: number | null
+          rm: number
+          salary: number
           season_id: string
-          vp: number | null
+          vp: number
         }
         Insert: {
           age?: number | null
-          ast?: number | null
-          ca?: number | null
+          ast?: number
+          ca?: number
           club_id?: string | null
           club_name?: string | null
-          cp?: number | null
+          cp?: number
           created_at?: string
-          gls?: number | null
+          gls?: number
           id?: string
           idu?: string | null
           info?: string | null
           league?: string | null
-          module: string
+          module?: string
           name: string
-          ra?: number | null
+          ra?: number
           rec?: string | null
-          rm?: number | null
-          salary?: number | null
+          rm?: number
+          salary?: number
           season_id: string
-          vp?: number | null
+          vp?: number
         }
         Update: {
           age?: number | null
-          ast?: number | null
-          ca?: number | null
+          ast?: number
+          ca?: number
           club_id?: string | null
           club_name?: string | null
-          cp?: number | null
+          cp?: number
           created_at?: string
-          gls?: number | null
+          gls?: number
           id?: string
           idu?: string | null
           info?: string | null
           league?: string | null
           module?: string
           name?: string
-          ra?: number | null
+          ra?: number
           rec?: string | null
-          rm?: number | null
-          salary?: number | null
+          rm?: number
+          salary?: number
           season_id?: string
-          vp?: number | null
+          vp?: number
         }
         Relationships: [
-          {
-            foreignKeyName: "players_club_id_fkey"
-            columns: ["club_id"]
-            isOneToOne: false
-            referencedRelation: "clubs"
-            referencedColumns: ["id"]
-          },
           {
             foreignKeyName: "players_season_id_fkey"
             columns: ["season_id"]
@@ -938,9 +940,9 @@ export type Database = {
           gf: number | null
           id: string
           info: string | null
-          is_champion: boolean | null
+          is_champion: boolean
           losses: number | null
-          module: string
+          module: Database["public"]["Enums"]["module_type"]
           played: number | null
           points: number | null
           position: number | null
@@ -960,9 +962,9 @@ export type Database = {
           gf?: number | null
           id?: string
           info?: string | null
-          is_champion?: boolean | null
+          is_champion?: boolean
           losses?: number | null
-          module: string
+          module: Database["public"]["Enums"]["module_type"]
           played?: number | null
           points?: number | null
           position?: number | null
@@ -982,9 +984,9 @@ export type Database = {
           gf?: number | null
           id?: string
           info?: string | null
-          is_champion?: boolean | null
+          is_champion?: boolean
           losses?: number | null
-          module?: string
+          module?: Database["public"]["Enums"]["module_type"]
           played?: number | null
           points?: number | null
           position?: number | null
@@ -1134,7 +1136,19 @@ export type Database = {
       show_trgm: { Args: { "": string }; Returns: string[] }
     }
     Enums: {
-      [_ in never]: never
+      module_type:
+        | "superleague"
+        | "national"
+        | "continental"
+        | "player_stats"
+        | "competitions"
+        | "coaches"
+        | "classifications"
+        | "transfers"
+        | "clubs"
+        | "players"
+        | "statistics"
+        | "player_profiles"
     }
     CompositeTypes: {
       [_ in never]: never
@@ -1261,6 +1275,21 @@ export type CompositeTypes<
 
 export const Constants = {
   public: {
-    Enums: {},
+    Enums: {
+      module_type: [
+        "superleague",
+        "national",
+        "continental",
+        "player_stats",
+        "competitions",
+        "coaches",
+        "classifications",
+        "transfers",
+        "clubs",
+        "players",
+        "statistics",
+        "player_profiles",
+      ],
+    },
   },
 } as const
