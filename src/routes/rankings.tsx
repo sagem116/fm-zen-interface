@@ -347,7 +347,10 @@ function RankingsPage() {
     // resolves to the filtered clubSeasonPoints bucket.
     const clubSeasonSet = new Set<string>();
     for (const s of standingsRows) clubSeasonSet.add(`${s.season_year}|${s.club_name}`);
-    for (const c of continentalRows) clubSeasonSet.add(`${c.season_year}|${c.club_name}`);
+    for (const c of continentalRows) {
+      if (c.team1) clubSeasonSet.add(`${c.season_year}|${c.team1}`);
+      if (c.team2) clubSeasonSet.add(`${c.season_year}|${c.team2}`);
+    }
     const allowedCoach = (c: (typeof d.coaches)[number]) => {
       if (!passYear(c.season_year)) return false;
       if (!c.club_name) return false;
