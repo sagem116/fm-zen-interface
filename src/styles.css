@@ -717,3 +717,696 @@ html.theme-neon [data-slot="switch"][data-state="checked"] {
 .recharts-reference-line line {
   stroke: var(--muted-foreground) !important;
 }
+
+/* =========================================================
+   NEON INTELLIGENCE — Full Design-System Overlay
+   Everything below is scoped to html.theme-neon and rewrites
+   the shell, sidebar, cards, tables, buttons, KPIs, inputs,
+   modals, tabs, badges, tooltips, popovers, toasts and
+   scrollbars into a HUD / command-center aesthetic.
+   ========================================================= */
+
+html.theme-neon {
+  --neon-font-display: "Orbitron", "Space Grotesk", system-ui, sans-serif;
+  --neon-font-ui: "Rajdhani", "Inter", system-ui, sans-serif;
+  --neon-font-mono: "JetBrains Mono", ui-monospace, monospace;
+  /* Wider sidebar via inline style override */
+}
+
+/* Override the inline --sidebar-width set by the SidebarProvider wrapper */
+html.theme-neon [data-slot="sidebar-wrapper"] {
+  --sidebar-width: 17.5rem !important;
+  --sidebar-width-icon: 3.75rem !important;
+}
+
+/* Global type refresh under this theme */
+html.theme-neon body {
+  font-family: var(--neon-font-ui);
+  letter-spacing: 0.005em;
+}
+html.theme-neon h1,
+html.theme-neon h2,
+html.theme-neon h3,
+html.theme-neon h4 {
+  font-family: var(--neon-font-display);
+  font-weight: 600;
+  letter-spacing: -0.005em;
+}
+
+/* Small uppercase labels take a technical, monospaced feel */
+html.theme-neon [data-slot="card-description"],
+html.theme-neon [data-slot="sidebar-group-label"],
+html.theme-neon [data-slot="table-head"],
+html.theme-neon [data-slot="badge"],
+html.theme-neon label,
+html.theme-neon .text-xs.uppercase,
+html.theme-neon .text-\[10px\] {
+  font-family: var(--neon-font-mono);
+  letter-spacing: 0.14em;
+  text-transform: uppercase;
+}
+
+/* Numbers/tabular figures across KPIs, tables and stats */
+html.theme-neon [data-slot="card-title"],
+html.theme-neon [data-slot="table-cell"],
+html.theme-neon .tabular-nums,
+html.theme-neon .font-mono {
+  font-variant-numeric: tabular-nums;
+}
+
+/* --------------- HUD grid background overlay --------------- */
+html.theme-neon body::before {
+  content: "";
+  position: fixed;
+  inset: 0;
+  background-image:
+    linear-gradient(oklch(0.85 0.17 210 / 0.045) 1px, transparent 1px),
+    linear-gradient(90deg, oklch(0.85 0.17 210 / 0.045) 1px, transparent 1px);
+  background-size: 56px 56px;
+  mask-image: radial-gradient(ellipse 90% 70% at 50% 0%, black 40%, transparent 80%);
+  pointer-events: none;
+  z-index: 0;
+}
+html.theme-neon body::after {
+  content: "";
+  position: fixed;
+  inset: 0;
+  pointer-events: none;
+  background: repeating-linear-gradient(
+    180deg,
+    transparent 0,
+    transparent 3px,
+    oklch(1 0 0 / 0.012) 3px,
+    oklch(1 0 0 / 0.012) 4px
+  );
+  z-index: 0;
+}
+html.theme-neon #root,
+html.theme-neon main {
+  position: relative;
+  z-index: 1;
+}
+
+/* --------------- SIDEBAR --------------- */
+html.theme-neon [data-slot="sidebar-container"] {
+  background:
+    linear-gradient(180deg, oklch(0.11 0.05 275 / 0.9) 0%, oklch(0.08 0.03 275 / 0.94) 100%);
+  backdrop-filter: blur(22px) saturate(150%);
+  border-right: 1px solid oklch(0.85 0.17 210 / 0.18);
+}
+html.theme-neon [data-slot="sidebar-container"]::before {
+  content: "";
+  position: absolute;
+  inset: 0;
+  pointer-events: none;
+  background:
+    radial-gradient(ellipse 100% 40% at 0% 0%, oklch(0.72 0.25 300 / 0.14), transparent 60%),
+    radial-gradient(ellipse 100% 40% at 100% 100%, oklch(0.85 0.17 210 / 0.1), transparent 60%);
+}
+html.theme-neon [data-slot="sidebar-container"]::after {
+  content: "";
+  position: absolute;
+  top: 0;
+  right: 0;
+  width: 1px;
+  height: 100%;
+  background: linear-gradient(180deg, transparent, oklch(0.85 0.17 210 / 0.55), transparent);
+  pointer-events: none;
+}
+html.theme-neon [data-slot="sidebar-header"] {
+  padding: 1.25rem 1rem 1rem;
+  border-bottom: 1px dashed oklch(0.85 0.17 210 / 0.18);
+}
+html.theme-neon [data-sidebar="group-label"] {
+  font-family: var(--neon-font-mono);
+  font-size: 0.66rem;
+  color: oklch(0.75 0.1 220);
+  letter-spacing: 0.22em;
+  padding-left: 0.75rem;
+  position: relative;
+}
+html.theme-neon [data-sidebar="group-label"]::before {
+  content: "//";
+  color: var(--neon-cyan);
+  margin-right: 0.4rem;
+  opacity: 0.7;
+}
+html.theme-neon [data-sidebar="menu-button"] {
+  height: 2.5rem;
+  padding: 0 0.85rem;
+  gap: 0.75rem;
+  border-radius: 6px;
+  font-family: var(--neon-font-ui);
+  font-weight: 500;
+  letter-spacing: 0.03em;
+  position: relative;
+  overflow: hidden;
+}
+html.theme-neon [data-sidebar="menu-button"] svg {
+  width: 1.15rem;
+  height: 1.15rem;
+  stroke-width: 1.75;
+}
+html.theme-neon [data-sidebar="menu-button"][data-active="true"]::before {
+  content: "";
+  position: absolute;
+  left: 0; top: 8%; bottom: 8%;
+  width: 3px;
+  border-radius: 0 3px 3px 0;
+  background: linear-gradient(180deg, var(--neon-cyan), var(--neon-violet));
+  box-shadow: 0 0 12px 0 var(--neon-cyan);
+}
+html.theme-neon [data-sidebar="menu-button"][data-active="true"]::after {
+  content: "▸";
+  position: absolute;
+  right: 0.85rem;
+  color: var(--neon-cyan);
+  font-size: 0.7rem;
+  opacity: 0.8;
+  animation: neonBlink 2s ease-in-out infinite;
+}
+
+/* --------------- HEADER / TOP BAR --------------- */
+html.theme-neon header,
+html.theme-neon [data-slot="app-header"] {
+  background: linear-gradient(180deg, oklch(0.12 0.04 275 / 0.82), oklch(0.09 0.03 275 / 0.5));
+  backdrop-filter: blur(16px) saturate(140%);
+  border-bottom: 1px solid oklch(0.85 0.17 210 / 0.18) !important;
+  position: relative;
+}
+html.theme-neon header::after {
+  content: "";
+  position: absolute;
+  left: 0; right: 0; bottom: -1px;
+  height: 1px;
+  background: linear-gradient(90deg, transparent, var(--neon-cyan), var(--neon-violet), transparent);
+  opacity: 0.65;
+}
+
+/* --------------- CARDS — HUD panels with corner brackets --------------- */
+html.theme-neon [data-slot="card"] {
+  position: relative;
+  border-radius: 4px;
+  background:
+    linear-gradient(180deg, oklch(0.16 0.05 275 / 0.55) 0%, oklch(0.11 0.04 275 / 0.7) 100%);
+  border: 1px solid oklch(0.65 0.18 220 / 0.22);
+  backdrop-filter: blur(16px) saturate(135%);
+  overflow: hidden;
+}
+html.theme-neon [data-slot="card"]::before,
+html.theme-neon [data-slot="card"]::after {
+  content: "";
+  position: absolute;
+  width: 14px;
+  height: 14px;
+  border-color: var(--neon-cyan);
+  pointer-events: none;
+  transition: border-color 260ms ease, box-shadow 260ms ease;
+}
+html.theme-neon [data-slot="card"]::before {
+  top: -1px; left: -1px;
+  border-top: 2px solid var(--neon-cyan);
+  border-left: 2px solid var(--neon-cyan);
+}
+html.theme-neon [data-slot="card"]::after {
+  bottom: -1px; right: -1px;
+  border-bottom: 2px solid var(--neon-cyan);
+  border-right: 2px solid var(--neon-cyan);
+}
+html.theme-neon [data-slot="card"]:hover::before,
+html.theme-neon [data-slot="card"]:hover::after {
+  border-color: var(--neon-magenta);
+  box-shadow: 0 0 12px oklch(0.72 0.28 340 / 0.6);
+}
+html.theme-neon [data-slot="card"]:hover {
+  border-color: oklch(0.72 0.28 340 / 0.4);
+  box-shadow:
+    0 0 0 1px oklch(0.85 0.17 210 / 0.1),
+    0 30px 60px -30px oklch(0.72 0.25 300 / 0.55);
+  transform: translateY(-1px);
+}
+html.theme-neon [data-slot="card-header"] {
+  border-bottom: 1px dashed oklch(0.65 0.18 220 / 0.22);
+  padding-bottom: 0.75rem;
+  margin-bottom: 0.75rem;
+}
+html.theme-neon [data-slot="card-title"] {
+  font-family: var(--neon-font-display);
+  letter-spacing: 0.02em;
+  font-weight: 600;
+}
+
+/* KPI treatment — any large number in a card lights up */
+html.theme-neon [data-slot="card"] .text-2xl,
+html.theme-neon [data-slot="card"] .text-3xl,
+html.theme-neon [data-slot="card"] .text-4xl,
+html.theme-neon [data-slot="card"] .text-5xl {
+  font-family: var(--neon-font-display);
+  font-weight: 700;
+  background: linear-gradient(120deg, oklch(0.98 0.03 210), var(--neon-cyan) 60%, var(--neon-violet));
+  -webkit-background-clip: text;
+  background-clip: text;
+  color: transparent;
+  text-shadow: 0 0 24px oklch(0.85 0.17 210 / 0.25);
+  font-variant-numeric: tabular-nums;
+}
+
+/* --------------- BUTTONS --------------- */
+html.theme-neon [data-slot="button"] {
+  font-family: var(--neon-font-ui);
+  font-weight: 600;
+  letter-spacing: 0.06em;
+  text-transform: uppercase;
+  border-radius: 4px;
+  position: relative;
+  isolation: isolate;
+  transition:
+    transform 180ms ease,
+    box-shadow 260ms ease,
+    background 260ms ease,
+    color 200ms ease,
+    filter 200ms ease;
+}
+html.theme-neon [data-slot="button"]:hover {
+  transform: translateY(-1px);
+}
+html.theme-neon [data-slot="button"]:active {
+  transform: translateY(0) scale(0.985);
+}
+
+/* Primary — angled glow pill */
+html.theme-neon [data-slot="button"].bg-primary {
+  background: linear-gradient(120deg, var(--neon-cyan) 0%, var(--neon-violet) 55%, var(--neon-magenta) 100%);
+  color: oklch(0.1 0.04 275);
+  border: 1px solid oklch(1 0 0 / 0.15);
+  box-shadow:
+    0 0 0 1px oklch(0.85 0.17 210 / 0.35),
+    0 8px 28px -6px oklch(0.72 0.25 300 / 0.6),
+    inset 0 1px 0 oklch(1 0 0 / 0.3);
+  clip-path: polygon(6px 0, 100% 0, 100% calc(100% - 6px), calc(100% - 6px) 100%, 0 100%, 0 6px);
+}
+html.theme-neon [data-slot="button"].bg-primary:hover {
+  filter: brightness(1.1) saturate(1.15);
+  box-shadow:
+    0 0 0 1px oklch(0.85 0.17 210 / 0.5),
+    0 12px 40px -6px oklch(0.72 0.28 340 / 0.7),
+    inset 0 1px 0 oklch(1 0 0 / 0.4);
+}
+/* Outline / ghost / secondary */
+html.theme-neon [data-slot="button"].border-input {
+  background: linear-gradient(180deg, oklch(0.18 0.06 275 / 0.6), oklch(0.13 0.04 275 / 0.75));
+  border: 1px solid oklch(0.65 0.18 220 / 0.35);
+  color: oklch(0.95 0.03 220);
+  backdrop-filter: blur(10px);
+}
+html.theme-neon [data-slot="button"].border-input:hover {
+  border-color: var(--neon-cyan);
+  color: oklch(0.98 0.02 210);
+  box-shadow:
+    0 0 0 1px var(--neon-cyan),
+    0 0 20px -4px oklch(0.85 0.17 210 / 0.6);
+}
+
+/* Icon-only buttons — square HUD chip */
+html.theme-neon [data-slot="button"].size-9,
+html.theme-neon [data-slot="button"][data-size="icon"] {
+  border-radius: 4px;
+}
+
+/* --------------- INPUTS --------------- */
+html.theme-neon input,
+html.theme-neon textarea,
+html.theme-neon [data-slot="input"] {
+  font-family: var(--neon-font-mono);
+  letter-spacing: 0.02em;
+  border-radius: 4px;
+  background: oklch(0.11 0.04 275 / 0.7) !important;
+  border: 1px solid oklch(0.65 0.18 220 / 0.28) !important;
+  color: oklch(0.97 0.02 220);
+  transition: border-color 200ms ease, box-shadow 240ms ease, background 200ms ease;
+}
+html.theme-neon input::placeholder,
+html.theme-neon textarea::placeholder {
+  color: oklch(0.6 0.05 230);
+  font-family: var(--neon-font-mono);
+  letter-spacing: 0.06em;
+  text-transform: uppercase;
+  font-size: 0.85em;
+}
+html.theme-neon input:focus-visible,
+html.theme-neon textarea:focus-visible {
+  border-color: var(--neon-cyan) !important;
+  box-shadow:
+    0 0 0 1px var(--neon-cyan),
+    0 0 22px -6px oklch(0.85 0.17 210 / 0.65) !important;
+  outline: none;
+}
+
+/* --------------- TABLES --------------- */
+html.theme-neon table {
+  border-collapse: separate;
+  border-spacing: 0;
+}
+html.theme-neon thead th,
+html.theme-neon [data-slot="table-header"] th {
+  background: linear-gradient(180deg, oklch(0.2 0.07 275 / 0.9), oklch(0.13 0.05 275 / 0.9));
+  color: oklch(0.85 0.06 220) !important;
+  font-family: var(--neon-font-mono) !important;
+  text-transform: uppercase;
+  letter-spacing: 0.16em;
+  font-size: 0.7rem !important;
+  padding-top: 0.75rem !important;
+  padding-bottom: 0.75rem !important;
+  border-bottom: 1px solid oklch(0.85 0.17 210 / 0.28) !important;
+  position: relative;
+}
+html.theme-neon thead th::after,
+html.theme-neon [data-slot="table-header"] th::after {
+  content: "";
+  position: absolute;
+  left: 12px; right: 12px; bottom: 0;
+  height: 1px;
+  background: linear-gradient(90deg, transparent, var(--neon-cyan), transparent);
+  opacity: 0.4;
+}
+html.theme-neon tbody tr,
+html.theme-neon [data-slot="table-row"] {
+  transition: background 220ms ease, box-shadow 260ms ease, transform 200ms ease;
+  position: relative;
+}
+html.theme-neon tbody tr::before,
+html.theme-neon [data-slot="table-row"]::before {
+  content: "";
+  position: absolute;
+  left: 0; top: 6px; bottom: 6px;
+  width: 2px;
+  border-radius: 0 2px 2px 0;
+  background: transparent;
+  transition: background 220ms ease, box-shadow 260ms ease;
+}
+html.theme-neon tbody tr:hover,
+html.theme-neon [data-slot="table-row"]:hover {
+  background: linear-gradient(90deg, oklch(0.85 0.17 210 / 0.08), transparent 65%);
+}
+html.theme-neon tbody tr:hover::before,
+html.theme-neon [data-slot="table-row"]:hover::before {
+  background: linear-gradient(180deg, var(--neon-cyan), var(--neon-violet));
+  box-shadow: 0 0 10px var(--neon-cyan);
+}
+html.theme-neon tbody tr[data-state="selected"]::before,
+html.theme-neon [data-slot="table-row"][data-state="selected"]::before {
+  background: linear-gradient(180deg, var(--neon-magenta), var(--neon-violet));
+  box-shadow: 0 0 14px var(--neon-magenta);
+}
+html.theme-neon tbody td,
+html.theme-neon [data-slot="table-cell"] {
+  border-bottom: 1px solid oklch(0.65 0.18 220 / 0.1) !important;
+  padding-top: 0.7rem !important;
+  padding-bottom: 0.7rem !important;
+}
+
+/* --------------- BADGES --------------- */
+html.theme-neon [data-slot="badge"] {
+  font-family: var(--neon-font-mono);
+  letter-spacing: 0.14em;
+  font-size: 0.65rem;
+  border-radius: 3px;
+  padding: 0.15rem 0.55rem;
+  background: linear-gradient(180deg, oklch(0.2 0.07 275 / 0.75), oklch(0.14 0.05 275 / 0.85));
+  border: 1px solid oklch(0.65 0.18 220 / 0.35);
+  box-shadow: inset 0 1px 0 oklch(1 0 0 / 0.06);
+  text-transform: uppercase;
+}
+html.theme-neon [data-slot="badge"].bg-primary {
+  background: linear-gradient(120deg, var(--neon-cyan), var(--neon-violet));
+  color: oklch(0.1 0.04 275);
+  border-color: transparent;
+  box-shadow: 0 0 12px -2px oklch(0.85 0.17 210 / 0.65);
+}
+
+/* --------------- TABS --------------- */
+html.theme-neon [data-slot="tabs-list"] {
+  background: oklch(0.13 0.04 275 / 0.7);
+  border: 1px solid oklch(0.65 0.18 220 / 0.22);
+  padding: 4px;
+  border-radius: 4px;
+  gap: 4px;
+}
+html.theme-neon [data-slot="tabs-trigger"] {
+  font-family: var(--neon-font-mono);
+  letter-spacing: 0.12em;
+  text-transform: uppercase;
+  font-size: 0.72rem;
+  border-radius: 3px;
+  transition: color 200ms ease, background 260ms ease, box-shadow 260ms ease;
+}
+html.theme-neon [data-slot="tabs-trigger"][data-state="active"] {
+  background: linear-gradient(180deg, oklch(0.85 0.17 210 / 0.22), oklch(0.72 0.25 300 / 0.14));
+  color: oklch(0.98 0.02 220);
+  box-shadow:
+    inset 0 0 0 1px oklch(0.85 0.17 210 / 0.4),
+    0 0 22px -6px oklch(0.85 0.17 210 / 0.55);
+}
+
+/* --------------- POPOVER / DIALOG / SHEET / DROPDOWN / TOOLTIP --------------- */
+html.theme-neon [data-slot="popover-content"],
+html.theme-neon [data-slot="dropdown-menu-content"],
+html.theme-neon [data-slot="select-content"],
+html.theme-neon [data-slot="command"],
+html.theme-neon [data-slot="dialog-content"],
+html.theme-neon [data-slot="sheet-content"],
+html.theme-neon [data-slot="hover-card-content"],
+html.theme-neon [data-slot="tooltip-content"],
+html.theme-neon [data-slot="menubar-content"] {
+  background: linear-gradient(180deg, oklch(0.15 0.06 275 / 0.96), oklch(0.1 0.04 275 / 0.98)) !important;
+  backdrop-filter: blur(22px) saturate(150%);
+  border: 1px solid oklch(0.65 0.18 220 / 0.35) !important;
+  border-radius: 4px !important;
+  box-shadow:
+    0 0 0 1px oklch(0.85 0.17 210 / 0.1),
+    0 30px 80px -20px oklch(0 0 0 / 0.9),
+    0 0 44px -12px oklch(0.85 0.17 210 / 0.25) !important;
+  position: relative;
+}
+html.theme-neon [data-slot="dialog-content"]::before,
+html.theme-neon [data-slot="popover-content"]::before,
+html.theme-neon [data-slot="sheet-content"]::before {
+  content: "";
+  position: absolute;
+  inset: 0;
+  pointer-events: none;
+  border-radius: inherit;
+  background:
+    linear-gradient(180deg, oklch(0.85 0.17 210 / 0.06), transparent 40%),
+    linear-gradient(0deg, oklch(0.72 0.25 300 / 0.05), transparent 40%);
+}
+html.theme-neon [data-slot="tooltip-content"] {
+  font-family: var(--neon-font-mono);
+  font-size: 0.72rem;
+  letter-spacing: 0.1em;
+  text-transform: uppercase;
+  padding: 0.35rem 0.55rem;
+  color: oklch(0.97 0.02 220) !important;
+}
+
+/* Dropdown items */
+html.theme-neon [data-slot="dropdown-menu-item"],
+html.theme-neon [data-slot="select-item"],
+html.theme-neon [data-slot="command-item"] {
+  border-radius: 3px;
+  transition: background 180ms ease, color 180ms ease;
+}
+html.theme-neon [data-slot="dropdown-menu-item"]:focus,
+html.theme-neon [data-slot="dropdown-menu-item"][data-highlighted],
+html.theme-neon [data-slot="select-item"][data-highlighted],
+html.theme-neon [data-slot="command-item"][data-selected="true"] {
+  background: linear-gradient(90deg, oklch(0.85 0.17 210 / 0.18), oklch(0.72 0.25 300 / 0.1));
+  color: oklch(0.98 0.02 220);
+  box-shadow: inset 2px 0 0 var(--neon-cyan);
+}
+
+/* --------------- COMMAND PALETTE (search) --------------- */
+html.theme-neon [cmdk-root],
+html.theme-neon [data-slot="command"] {
+  font-family: var(--neon-font-ui);
+}
+html.theme-neon [cmdk-input] {
+  font-family: var(--neon-font-mono);
+  letter-spacing: 0.05em;
+  border-bottom: 1px solid oklch(0.65 0.18 220 / 0.3) !important;
+  background: transparent !important;
+}
+html.theme-neon [cmdk-group-heading] {
+  font-family: var(--neon-font-mono);
+  color: var(--neon-cyan) !important;
+  text-transform: uppercase;
+  letter-spacing: 0.2em;
+  font-size: 0.65rem !important;
+}
+html.theme-neon [cmdk-item] {
+  border-radius: 3px;
+  position: relative;
+  padding-left: 0.75rem;
+}
+html.theme-neon [cmdk-item][data-selected="true"] {
+  background: linear-gradient(90deg, oklch(0.85 0.17 210 / 0.16), oklch(0.72 0.25 300 / 0.08)) !important;
+  box-shadow: inset 2px 0 0 var(--neon-cyan);
+}
+
+/* --------------- TOAST --------------- */
+html.theme-neon [data-sonner-toast],
+html.theme-neon [data-slot="toast"] {
+  background: linear-gradient(180deg, oklch(0.15 0.06 275 / 0.96), oklch(0.1 0.04 275 / 0.98)) !important;
+  border: 1px solid oklch(0.65 0.18 220 / 0.35) !important;
+  border-radius: 4px !important;
+  color: oklch(0.97 0.02 220) !important;
+  font-family: var(--neon-font-ui) !important;
+  box-shadow:
+    0 0 0 1px oklch(0.85 0.17 210 / 0.14),
+    0 0 40px -8px oklch(0.72 0.25 300 / 0.4),
+    0 25px 50px -20px oklch(0 0 0 / 0.8) !important;
+  backdrop-filter: blur(18px);
+  position: relative;
+  overflow: hidden;
+}
+html.theme-neon [data-sonner-toast]::before {
+  content: "";
+  position: absolute;
+  left: 0; top: 0; bottom: 0;
+  width: 3px;
+  background: linear-gradient(180deg, var(--neon-cyan), var(--neon-violet));
+  box-shadow: 0 0 12px var(--neon-cyan);
+}
+
+/* --------------- ACCORDION --------------- */
+html.theme-neon [data-slot="accordion-item"] {
+  border-bottom: 1px dashed oklch(0.65 0.18 220 / 0.22) !important;
+}
+html.theme-neon [data-slot="accordion-trigger"] {
+  font-family: var(--neon-font-display);
+  letter-spacing: 0.02em;
+  transition: color 200ms ease;
+}
+html.theme-neon [data-slot="accordion-trigger"]:hover {
+  color: var(--neon-cyan);
+}
+
+/* --------------- SCROLLBAR --------------- */
+html.theme-neon ::-webkit-scrollbar {
+  width: 8px;
+  height: 8px;
+}
+html.theme-neon ::-webkit-scrollbar-track {
+  background: oklch(0.09 0.03 275 / 0.5);
+}
+html.theme-neon ::-webkit-scrollbar-thumb {
+  background: linear-gradient(180deg, var(--neon-cyan), var(--neon-violet));
+  border-radius: 2px;
+  box-shadow: 0 0 8px oklch(0.85 0.17 210 / 0.4);
+}
+html.theme-neon ::-webkit-scrollbar-thumb:hover {
+  background: linear-gradient(180deg, var(--neon-magenta), var(--neon-cyan));
+}
+
+/* --------------- CHARTS --------------- */
+html.theme-neon .recharts-default-tooltip {
+  background: linear-gradient(180deg, oklch(0.15 0.06 275 / 0.96), oklch(0.1 0.04 275 / 0.98)) !important;
+  border: 1px solid oklch(0.85 0.17 210 / 0.4) !important;
+  border-radius: 4px !important;
+  font-family: var(--neon-font-mono) !important;
+  box-shadow: 0 0 30px -6px oklch(0.85 0.17 210 / 0.4) !important;
+}
+html.theme-neon .recharts-cartesian-grid line {
+  stroke: oklch(0.65 0.18 220 / 0.15) !important;
+  stroke-dasharray: 2 4;
+}
+html.theme-neon .recharts-cartesian-axis-tick text,
+html.theme-neon .recharts-polar-angle-axis-tick text {
+  font-family: var(--neon-font-mono) !important;
+  font-size: 10.5px !important;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+  fill: oklch(0.72 0.05 220) !important;
+}
+
+/* --------------- SEPARATORS / BREADCRUMBS --------------- */
+html.theme-neon [data-slot="separator"] {
+  background: linear-gradient(90deg, transparent, oklch(0.65 0.18 220 / 0.45), transparent);
+  height: 1px;
+}
+html.theme-neon [data-slot="breadcrumb-list"] {
+  font-family: var(--neon-font-mono);
+  text-transform: uppercase;
+  letter-spacing: 0.14em;
+  font-size: 0.72rem;
+}
+html.theme-neon [data-slot="breadcrumb-separator"] svg {
+  color: var(--neon-cyan);
+  opacity: 0.6;
+}
+
+/* --------------- SWITCH / PROGRESS / SLIDER --------------- */
+html.theme-neon [data-slot="switch"][data-state="checked"] {
+  background: linear-gradient(120deg, var(--neon-cyan), var(--neon-violet)) !important;
+  box-shadow: 0 0 14px -2px oklch(0.85 0.17 210 / 0.7);
+}
+html.theme-neon [data-slot="progress-indicator"] {
+  background: linear-gradient(90deg, var(--neon-cyan), var(--neon-violet), var(--neon-magenta));
+  box-shadow: 0 0 12px -2px oklch(0.85 0.17 210 / 0.65);
+}
+html.theme-neon [data-slot="slider-range"] {
+  background: linear-gradient(90deg, var(--neon-cyan), var(--neon-violet));
+  box-shadow: 0 0 8px oklch(0.85 0.17 210 / 0.5);
+}
+html.theme-neon [data-slot="slider-thumb"] {
+  background: oklch(0.15 0.04 275);
+  border: 2px solid var(--neon-cyan);
+  box-shadow: 0 0 10px oklch(0.85 0.17 210 / 0.7);
+}
+
+/* --------------- LINKS / SELECTION --------------- */
+html.theme-neon a:hover {
+  color: var(--neon-cyan);
+}
+html.theme-neon ::selection {
+  background: oklch(0.72 0.25 300 / 0.45);
+  color: oklch(0.98 0.02 220);
+}
+
+/* --------------- ANIMATIONS --------------- */
+@keyframes neonBlink {
+  0%, 100% { opacity: 0.85; }
+  50% { opacity: 0.25; }
+}
+@keyframes neonSlide {
+  0% { transform: translateX(-8px); opacity: 0; }
+  100% { transform: translateX(0); opacity: 1; }
+}
+html.theme-neon [data-slot="dialog-content"],
+html.theme-neon [data-slot="popover-content"],
+html.theme-neon [data-slot="dropdown-menu-content"] {
+  animation: neonSlide 220ms ease-out;
+}
+
+/* --------------- ACCESSIBLE FOCUS --------------- */
+html.theme-neon *:focus-visible {
+  outline: 1px solid var(--neon-cyan);
+  outline-offset: 2px;
+}
+
+/* --------------- SKELETON --------------- */
+html.theme-neon [data-slot="skeleton"] {
+  background: linear-gradient(
+    90deg,
+    oklch(0.16 0.05 275 / 0.6) 0%,
+    oklch(0.85 0.17 210 / 0.15) 50%,
+    oklch(0.16 0.05 275 / 0.6) 100%
+  );
+  background-size: 200% 100%;
+  animation: neonShimmer 1.8s ease-in-out infinite;
+  border-radius: 3px;
+}
+@keyframes neonShimmer {
+  0% { background-position: 200% 0; }
+  100% { background-position: -200% 0; }
+}
