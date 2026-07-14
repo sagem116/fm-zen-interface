@@ -333,7 +333,7 @@ export function ProfileShell({
           subtitle="Como este ranking é calculado — pesos, contribuições e diagnóstico."
           icon={<ExternalLink className="size-4" />}
           storageKey={`fm.profile.explain.${ctx.kind}`}
-          defaultOpen
+          defaultOpen={false}
           tone="accent"
         >
           <ExplainTab ctx={ctx} />

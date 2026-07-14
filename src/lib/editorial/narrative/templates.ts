@@ -24,64 +24,66 @@ export interface TemplateBlock {
 
 export const OPENING_STRONG: TemplateBlock = {
   variants: [
-    "Depois de uma época extraordinária, {name} consolida-se entre a elite mundial da posição.",
-    "A campanha realizada por {name} coloca-o naturalmente no topo do ranking da sua posição.",
-    "{name} atravessa um dos momentos mais brilhantes da sua carreira, refletido de forma clara neste ranking.",
+    "É difícil ler o atual momento de {name} sem o colocar entre a elite: o desempenho recente não é um episódio, é a extensão natural da forma como o resto da temporada foi conduzido.",
+    "Há épocas que se afirmam pela regularidade e outras pela intensidade. A de {name} conseguiu as duas coisas — e o ranking limita-se a traduzir o que já era evidente ao longo da temporada.",
+    "{name} está num daqueles ciclos raros em que tudo se alinha: contexto, forma e decisões técnicas caminham na mesma direção, e o desempenho reflete-o de forma inequívoca.",
   ],
 };
 
 export const OPENING_STABLE: TemplateBlock = {
   variants: [
-    "{name} continua a afirmar-se como uma das principais referências da posição.",
-    "A regularidade demonstrada por {name} volta a ter tradução direta no ranking desta época.",
-    "Época sólida de {name}, que mantém o estatuto ganho nos últimos anos.",
+    "A leitura mais interessante de {name} nesta época não está numa métrica isolada — está na ausência de quebras. É essa constância que mantém o estatuto competitivo.",
+    "{name} reforça a ideia de que estabilidade, em alta densidade competitiva, é uma forma silenciosa de excelência: sem exageros, mas sem cedências.",
+    "Época sem ruído para {name}, no melhor sentido possível: continua a produzir dentro da faixa de rendimento onde os melhores costumam permanecer.",
   ],
 };
 
 export const OPENING_DECLINE: TemplateBlock = {
   variants: [
-    "Apesar da qualidade demonstrada, {name} perdeu algumas posições face à época anterior devido à forte concorrência.",
-    "{name} cede terreno no ranking desta época, ainda que mantenha um patamar de referência.",
-    "Época menos conseguida de {name}, que se afasta ligeiramente dos lugares cimeiros.",
+    "É legítimo dizer que {name} perde alguma tração nesta época — mas seria injusto ler o momento fora do contexto: a concorrência subiu antes de o seu registo baixar.",
+    "A época obriga a moderar o tom em torno de {name}. Não deixou de ser competitivo, mas o teto do próprio ranking subiu mais depressa do que o seu.",
+    "O ciclo atual de {name} exige leitura mais fina: o patamar continua acima da média, mas a distância para o topo cresceu por comparação, não por queda absoluta.",
   ],
 };
 
 export const POSITIONING: TemplateBlock = {
   variants: [
-    "Ocupa atualmente o {rank}.º lugar de {total}, pertencendo ao percentil {percentile} das entidades avaliadas.",
-    "Aparece no {rank}.º lugar entre {total}, no percentil {percentile}, com a classificação {grade}.",
-    "Encontra-se em {rank}.º lugar num universo de {total} avaliações, dentro do percentil {percentile}.",
+    "Neste universo de {total} avaliações, o {rank}.º lugar coloca-o dentro do percentil {percentile} — sinal de que a leitura competitiva se faz já num plano mais restrito do que o comum.",
+    "Um {rank}.º lugar entre {total} avaliações não é apenas uma posição numérica: representa o percentil {percentile}, aquele patamar em que qualquer variação passa a exigir contexto para ser interpretada.",
+    "A posição atual — {rank}.º entre {total} — situa-o no percentil {percentile}, uma zona onde as diferenças entre entidades deixam de ser explicadas por acaso.",
   ],
 };
 
 export const DRIVERS: TemplateBlock = {
   variants: [
-    "A sua posição é explicada sobretudo por {topDriver1} e {topDriver2}, os fatores que mais contribuem para o Score final.",
-    "Destacam-se, entre os principais contribuintes, {topDriver1} e {topDriver2}.",
-    "Os grandes responsáveis por esta pontuação são {topDriver1} e {topDriver2}.",
+    "A leitura do desempenho não passa por um único traço: é a combinação entre {topDriver1} e {topDriver2} que sustenta o patamar atual e explica por que razão a avaliação se distancia da média.",
+    "Mais do que qualquer indicador isolado, o peso de {topDriver1} associado a {topDriver2} desenha um perfil coerente, com pontos de apoio bem definidos.",
+    "Onde muitos dependem de um só ponto forte, aqui a solidez nasce do cruzamento entre {topDriver1} e {topDriver2}, o que dá previsibilidade ao rendimento.",
+    "{topDriver1} é o traço mais evidente, mas seria injusto ignorar como {topDriver2} funciona como segundo eixo — sem ele, o retrato ficaria incompleto.",
   ],
 };
 
 export const EVOLUTION_UP: TemplateBlock = {
   variants: [
-    "A evolução registada face a {prevSeason} coloca-o entre as maiores revelações da temporada.",
-    "Subiu {deltaRank} posições relativamente à época anterior, uma das progressões mais expressivas do ranking.",
-    "A consistência demonstrada permitiu-lhe subir várias posições relativamente à época passada.",
+    "A distância percorrida face a {prevSeason} não se explica por um único acontecimento: foi a acumulação de pequenos ganhos que empurrou a leitura para outro patamar.",
+    "A subida face à época passada não é acidental — é o tipo de progressão que só acontece quando o desempenho passa a ser lido de forma diferente pelos adversários e pelo próprio contexto competitivo.",
+    "Quando uma temporada devolve este tipo de salto, quase nunca é por sorte. A evolução face a {prevSeason} sugere uma reorganização real do rendimento, não um pico isolado.",
   ],
 };
 
 export const EVOLUTION_DOWN: TemplateBlock = {
   variants: [
-    "Cedeu {deltaRank} posições face à época anterior, sinal da exigência crescente da categoria.",
-    "Perde alguma tração face à temporada anterior, num ranking cada vez mais competitivo.",
-    "A época encerra abaixo do patamar da anterior, apesar de manter valores muito assinaláveis.",
+    "O recuo face a {prevSeason} tem menos a ver com uma quebra do que com o ritmo dos outros: o ranking subiu de nível, e isso pesa mesmo em quem mantém padrão.",
+    "A leitura da queda exige contexto: {name} não deixou de produzir — a comparação é que se tornou mais dura, num ranking que continua a apertar critérios.",
+    "Uma quebra na posição raramente conta a história completa. Aqui, o patamar continua respeitável; o que mudou foi o teto competitivo em redor.",
   ],
 };
 
 export const EVOLUTION_FLAT: TemplateBlock = {
   variants: [
-    "Mantém uma posição em linha com a época anterior, prova da sua regularidade.",
-    "A época termina numa cadência semelhante à anterior, sem grandes oscilações.",
+    "A ausência de movimento face à época passada é, por si só, uma leitura: mantém-se estável num universo que raramente se estabiliza.",
+    "Em rankings desta natureza, repetir posição costuma ser mais difícil do que subir. A época devolve exatamente esse tipo de continuidade.",
+    "O registo mantém-se dentro da mesma faixa da época anterior, o que num contexto competitivo tão volátil funciona quase como um sinal de solidez.",
   ],
 };
 
@@ -122,16 +124,17 @@ export const CONTEXT_BEST_CLUB: TemplateBlock = {
 
 export const CLOSING_ELITE: TemplateBlock = {
   variants: [
-    "Uma época que confirma o estatuto ganho nos últimos anos.",
-    "Mais uma temporada em que a exigência é honrada com resultados.",
-    "Um exercício que reforça o lugar de {name} entre a elite.",
+    "Fechar a época com este patamar é a parte mais fácil de descrever — o difícil é sustentar, ano após ano, o padrão que agora se lê com naturalidade.",
+    "Um exercício que reforça o lugar de {name} entre a elite não pela pontuação isolada, mas pela repetição do sinal.",
+    "Em síntese: o rendimento não é surpresa e é essa ausência de surpresa que hoje já é o argumento mais forte.",
   ],
 };
 
 export const CLOSING_NEUTRAL: TemplateBlock = {
   variants: [
-    "O futuro dirá se este é o início de um novo ciclo ou um pico de forma.",
-    "A próxima época confirmará ou não a solidez deste desempenho.",
+    "Ficará para a próxima época a resposta à pergunta que este exercício deixa aberta: consolidação ou pico?",
+    "O retrato atual permite duas leituras — otimista ou cautelosa — e a próxima temporada é que vai decidir qual delas prevalece.",
+    "É um momento intermédio, do género que só ganha significado com o passar do tempo. Convém ler com paciência.",
   ],
 };
 
@@ -139,55 +142,57 @@ export const CLOSING_NEUTRAL: TemplateBlock = {
 
 export const OPENING_BIOGRAPHICAL_ASCENDING: TemplateBlock = {
   variants: [
-    "Depois de várias épocas de crescimento sustentado, {name} passa de promessa a referência da posição.",
-    "A trajetória de {name} confirma uma progressão sólida: cada época elevou o patamar da anterior.",
-    "Ao longo de {seasons} épocas, {name} construiu um percurso ascendente que agora se traduz em estatuto internacional.",
+    "A carreira de {name} deixou de se ler como promessa: as últimas épocas encadeiam-se numa progressão que já não é acidental, mas o resultado de um crescimento sustentado.",
+    "Não é uma explosão pontual — é a soma de várias épocas em que o patamar competitivo foi sendo empurrado ligeiramente para cima. {name} atravessa hoje a fase em que a trajetória se torna estatuto.",
+    "Ao longo de {seasons} épocas seguidas, o registo de {name} conta uma história linear: menos oscilações, mais consolidação e, sobretudo, um teto que continua a subir.",
   ],
 };
 
 export const OPENING_BIOGRAPHICAL_PEAK: TemplateBlock = {
   variants: [
-    "{name} vive o auge da carreira, com {seasons} épocas ao mais alto nível e um patamar competitivo raro.",
-    "No pico da carreira, {name} afirma-se como uma das figuras marcantes da sua geração.",
-    "A carreira de {name} atingiu o ponto mais alto, sustentada por {seasons} épocas de rendimento consistente.",
+    "Chegou a fase em que a carreira se lê no presente. {name} está no auge — não pelo brilho de uma época isolada, mas pela densidade competitiva acumulada em {seasons} temporadas.",
+    "Poucos atletas conseguem transformar longevidade em pico ao mesmo tempo. É esse o retrato de {name}: um jogador no seu melhor momento, com histórico suficiente para sustentar a leitura.",
+    "A curva de rendimento estabilizou no ponto mais alto. Aquilo que antes eram lampejos passou a ser padrão, e a carreira de {name} vive agora a fase em que a exigência dos outros é maior do que a sua própria.",
   ],
 };
 
 export const OPENING_BIOGRAPHICAL_VETERAN: TemplateBlock = {
   variants: [
-    "Com {seasons} épocas de carreira, {name} mantém a competitividade que o distingue há vários anos.",
-    "Veterano de {seasons} épocas, {name} continua a impor-se num universo cada vez mais jovem.",
-    "A longevidade de {name} é já um dos traços mais notáveis da sua carreira.",
+    "Aos {seasons}.º ano de carreira ao alto nível, {name} já não precisa de provar nada — e é aí que o seu contributo se torna mais interessante de ler, porque assenta em decisões e não em impulsos.",
+    "A longevidade de {name} é, por si só, a parte mais difícil de replicar. Manter competitividade tanto tempo obriga a uma reinvenção que raramente se lê nos números brutos.",
+    "Já ninguém fala de {name} pela idade — fala-se pela forma como continua a resistir num ecossistema cada vez mais jovem e exigente.",
   ],
 };
 
 export const OPENING_BIOGRAPHICAL_EMERGING: TemplateBlock = {
   variants: [
-    "{name} começa a impor-se e as primeiras épocas de carreira apontam para um percurso promissor.",
-    "Ainda no início da carreira, {name} já mostra sinais claros de potencial para chegar ao topo.",
-    "As primeiras épocas de {name} colocam-no entre os nomes a seguir de perto.",
+    "É prematuro fechar um retrato definitivo de {name}, mas os primeiros sinais já não se explicam por acaso: há regularidade suficiente para justificar atenção.",
+    "As primeiras épocas de {name} não são só uma promessa — mostram base competitiva já reconhecível, o que raramente acontece tão cedo.",
+    "Ainda no arranque da carreira, o registo de {name} contém indicadores incompatíveis com uma simples curiosidade. O caminho, embora curto, é sólido.",
   ],
 };
 
 export const TRAJECTORY_ASCENT: TemplateBlock = {
   variants: [
-    "A época de {peakSeason} marcou a viragem, com o pico de rendimento a chegar em {peakScore} pontos.",
-    "Foi em {peakSeason} que {name} atingiu o pico da carreira ({peakScore}).",
-    "O ponto mais alto até hoje foi registado em {peakSeason}, num valor de {peakScore}.",
+    "A época de {peakSeason} funcionou como ponto de viragem: o rendimento subiu para {peakScore} e, sobretudo, deixou de ser um pico isolado para se transformar em referência interna da carreira.",
+    "É difícil ignorar {peakSeason} quando se analisa {name}. Foi nessa temporada que o teto se moveu para {peakScore} e o corpo da carreira se reorganizou em torno dessa marca.",
+    "Todas as carreiras têm um ponto onde tudo alinha. Para {name}, aconteceu em {peakSeason}, ao atingir {peakScore} — e a leitura seguinte passou a fazer-se sempre à luz desse patamar.",
   ],
 };
 
 export const TRAJECTORY_CONSOLIDATION: TemplateBlock = {
   variants: [
-    "A regularidade ao longo dos anos consolidou-o como uma presença fixa entre os melhores.",
-    "A carreira de {name} desenha uma curva estável, sinal de uma consistência raramente vista.",
+    "A regularidade tornou-se o traço mais valioso: {name} não depende de picos para manter o estatuto — mantém-no pela ausência de quebras.",
+    "A curva de rendimento é linear há vários anos, e isso é raro. Onde outros oscilam, {name} escolhe repetir, e é essa repetição que sustenta a leitura atual.",
+    "Consistência não é sinónimo de rotina. Ao longo destas épocas, {name} conseguiu manter-se dentro de uma faixa apertada de rendimento, mesmo em contextos competitivos distintos.",
   ],
 };
 
 export const TRAJECTORY_LEGACY: TemplateBlock = {
   variants: [
-    "Os números acumulados ao longo da carreira colocam-no numa categoria à parte.",
-    "O legado de {name} é já uma referência para gerações futuras.",
+    "O que ficará de {name} não são as épocas isoladas — é o padrão. E poucos padrões sobrevivem tanto tempo à comparação direta.",
+    "A carreira já entrou no território em que a comparação passa a ser feita entre gerações, e não entre pares. É o sinal mais claro de que a marca deixará impacto.",
+    "O legado começa a ler-se antes do fim da carreira: {name} já é referência histórica dentro da sua categoria.",
   ],
 };
 
