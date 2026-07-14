@@ -1145,6 +1145,10 @@ export type Database = {
         | "coaches"
         | "classifications"
         | "transfers"
+        | "clubs"
+        | "players"
+        | "statistics"
+        | "player_profiles"
     }
     CompositeTypes: {
       [_ in never]: never
@@ -1281,6 +1285,10 @@ export const Constants = {
         "coaches",
         "classifications",
         "transfers",
+        "clubs",
+        "players",
+        "statistics",
+        "player_profiles",
       ],
     },
   },
