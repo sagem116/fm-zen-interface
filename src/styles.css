@@ -346,3 +346,52 @@ html.theme-graygold body {
 ::-webkit-scrollbar-thumb:hover {
   background: oklch(0.82 0.17 88 / 0.4);
 }
+
+/* --------- Recharts theming (tooltips, axes, legends) ---------
+ * Applies to any Tooltip / axis / legend rendered by recharts that uses
+ * the default styling (i.e. does not override contentStyle). This keeps
+ * every chart legible across light/dark themes without touching each
+ * chart component individually.
+ */
+.recharts-default-tooltip,
+.recharts-tooltip-wrapper .recharts-default-tooltip {
+  background: var(--popover) !important;
+  color: var(--popover-foreground) !important;
+  border: 1px solid var(--border) !important;
+  border-radius: calc(var(--radius) - 2px) !important;
+  box-shadow: 0 8px 24px -12px oklch(0 0 0 / 0.55) !important;
+  padding: 8px 10px !important;
+  font-size: 12px !important;
+}
+.recharts-default-tooltip .recharts-tooltip-label,
+.recharts-tooltip-wrapper .recharts-tooltip-label {
+  color: var(--foreground) !important;
+  font-weight: 600 !important;
+  margin-bottom: 4px !important;
+}
+.recharts-default-tooltip .recharts-tooltip-item,
+.recharts-tooltip-wrapper .recharts-tooltip-item {
+  color: var(--popover-foreground) !important;
+}
+.recharts-default-tooltip .recharts-tooltip-item-name,
+.recharts-default-tooltip .recharts-tooltip-item-separator,
+.recharts-default-tooltip .recharts-tooltip-item-value,
+.recharts-default-tooltip .recharts-tooltip-item-unit {
+  color: var(--popover-foreground) !important;
+}
+.recharts-cartesian-axis-tick text,
+.recharts-polar-angle-axis-tick text,
+.recharts-polar-radius-axis-tick text {
+  fill: var(--muted-foreground) !important;
+}
+.recharts-legend-item-text {
+  color: var(--foreground) !important;
+}
+.recharts-cartesian-grid line,
+.recharts-polar-grid line {
+  stroke: var(--border) !important;
+  stroke-opacity: 0.4;
+}
+.recharts-reference-line line {
+  stroke: var(--muted-foreground) !important;
+}
