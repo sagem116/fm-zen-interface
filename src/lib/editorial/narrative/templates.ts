@@ -140,55 +140,57 @@ export const CLOSING_NEUTRAL: TemplateBlock = {
 
 export const OPENING_BIOGRAPHICAL_ASCENDING: TemplateBlock = {
   variants: [
-    "Depois de várias épocas de crescimento sustentado, {name} passa de promessa a referência da posição.",
-    "A trajetória de {name} confirma uma progressão sólida: cada época elevou o patamar da anterior.",
-    "Ao longo de {seasons} épocas, {name} construiu um percurso ascendente que agora se traduz em estatuto internacional.",
+    "A carreira de {name} deixou de se ler como promessa: as últimas épocas encadeiam-se numa progressão que já não é acidental, mas o resultado de um crescimento sustentado.",
+    "Não é uma explosão pontual — é a soma de várias épocas em que o patamar competitivo foi sendo empurrado ligeiramente para cima. {name} atravessa hoje a fase em que a trajetória se torna estatuto.",
+    "Ao longo de {seasons} épocas seguidas, o registo de {name} conta uma história linear: menos oscilações, mais consolidação e, sobretudo, um teto que continua a subir.",
   ],
 };
 
 export const OPENING_BIOGRAPHICAL_PEAK: TemplateBlock = {
   variants: [
-    "{name} vive o auge da carreira, com {seasons} épocas ao mais alto nível e um patamar competitivo raro.",
-    "No pico da carreira, {name} afirma-se como uma das figuras marcantes da sua geração.",
-    "A carreira de {name} atingiu o ponto mais alto, sustentada por {seasons} épocas de rendimento consistente.",
+    "Chegou a fase em que a carreira se lê no presente. {name} está no auge — não pelo brilho de uma época isolada, mas pela densidade competitiva acumulada em {seasons} temporadas.",
+    "Poucos atletas conseguem transformar longevidade em pico ao mesmo tempo. É esse o retrato de {name}: um jogador no seu melhor momento, com histórico suficiente para sustentar a leitura.",
+    "A curva de rendimento estabilizou no ponto mais alto. Aquilo que antes eram lampejos passou a ser padrão, e a carreira de {name} vive agora a fase em que a exigência dos outros é maior do que a sua própria.",
   ],
 };
 
 export const OPENING_BIOGRAPHICAL_VETERAN: TemplateBlock = {
   variants: [
-    "Com {seasons} épocas de carreira, {name} mantém a competitividade que o distingue há vários anos.",
-    "Veterano de {seasons} épocas, {name} continua a impor-se num universo cada vez mais jovem.",
-    "A longevidade de {name} é já um dos traços mais notáveis da sua carreira.",
+    "Aos {seasons}.º ano de carreira ao alto nível, {name} já não precisa de provar nada — e é aí que o seu contributo se torna mais interessante de ler, porque assenta em decisões e não em impulsos.",
+    "A longevidade de {name} é, por si só, a parte mais difícil de replicar. Manter competitividade tanto tempo obriga a uma reinvenção que raramente se lê nos números brutos.",
+    "Já ninguém fala de {name} pela idade — fala-se pela forma como continua a resistir num ecossistema cada vez mais jovem e exigente.",
   ],
 };
 
 export const OPENING_BIOGRAPHICAL_EMERGING: TemplateBlock = {
   variants: [
-    "{name} começa a impor-se e as primeiras épocas de carreira apontam para um percurso promissor.",
-    "Ainda no início da carreira, {name} já mostra sinais claros de potencial para chegar ao topo.",
-    "As primeiras épocas de {name} colocam-no entre os nomes a seguir de perto.",
+    "É prematuro fechar um retrato definitivo de {name}, mas os primeiros sinais já não se explicam por acaso: há regularidade suficiente para justificar atenção.",
+    "As primeiras épocas de {name} não são só uma promessa — mostram base competitiva já reconhecível, o que raramente acontece tão cedo.",
+    "Ainda no arranque da carreira, o registo de {name} contém indicadores incompatíveis com uma simples curiosidade. O caminho, embora curto, é sólido.",
   ],
 };
 
 export const TRAJECTORY_ASCENT: TemplateBlock = {
   variants: [
-    "A época de {peakSeason} marcou a viragem, com o pico de rendimento a chegar em {peakScore} pontos.",
-    "Foi em {peakSeason} que {name} atingiu o pico da carreira ({peakScore}).",
-    "O ponto mais alto até hoje foi registado em {peakSeason}, num valor de {peakScore}.",
+    "A época de {peakSeason} funcionou como ponto de viragem: o rendimento subiu para {peakScore} e, sobretudo, deixou de ser um pico isolado para se transformar em referência interna da carreira.",
+    "É difícil ignorar {peakSeason} quando se analisa {name}. Foi nessa temporada que o teto se moveu para {peakScore} e o corpo da carreira se reorganizou em torno dessa marca.",
+    "Todas as carreiras têm um ponto onde tudo alinha. Para {name}, aconteceu em {peakSeason}, ao atingir {peakScore} — e a leitura seguinte passou a fazer-se sempre à luz desse patamar.",
   ],
 };
 
 export const TRAJECTORY_CONSOLIDATION: TemplateBlock = {
   variants: [
-    "A regularidade ao longo dos anos consolidou-o como uma presença fixa entre os melhores.",
-    "A carreira de {name} desenha uma curva estável, sinal de uma consistência raramente vista.",
+    "A regularidade tornou-se o traço mais valioso: {name} não depende de picos para manter o estatuto — mantém-no pela ausência de quebras.",
+    "A curva de rendimento é linear há vários anos, e isso é raro. Onde outros oscilam, {name} escolhe repetir, e é essa repetição que sustenta a leitura atual.",
+    "Consistência não é sinónimo de rotina. Ao longo destas épocas, {name} conseguiu manter-se dentro de uma faixa apertada de rendimento, mesmo em contextos competitivos distintos.",
   ],
 };
 
 export const TRAJECTORY_LEGACY: TemplateBlock = {
   variants: [
-    "Os números acumulados ao longo da carreira colocam-no numa categoria à parte.",
-    "O legado de {name} é já uma referência para gerações futuras.",
+    "O que ficará de {name} não são as épocas isoladas — é o padrão. E poucos padrões sobrevivem tanto tempo à comparação direta.",
+    "A carreira já entrou no território em que a comparação passa a ser feita entre gerações, e não entre pares. É o sinal mais claro de que a marca deixará impacto.",
+    "O legado começa a ler-se antes do fim da carreira: {name} já é referência histórica dentro da sua categoria.",
   ],
 };
 
