@@ -709,7 +709,7 @@ export async function logImportFailure(
 
   await supabase.from("imports").insert({
     season_id: season.id,
-    module,
+    module: module as ImportLogRow["module"],
     filename,
     status: "error",
     warnings: { messages: [message] },
