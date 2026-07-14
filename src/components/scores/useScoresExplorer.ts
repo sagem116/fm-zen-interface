@@ -446,13 +446,6 @@ export function useScoresExplorer(
     season: number | null,
   ): ScoreEvaluationEntry => {
     const normalizedEntity = normalizeName(entityName);
-    const metricRows =
-      score.entityKind === "player"
-        ? (playersByName.get(normalizedEntity) ?? []).filter((row) =>
-            season ? row.season_year === season : true,
-          )
-        : [];
-    const metricsAvailable = score.entityKind !== "player" || metricRows.length > 0;
     const universeIdentity = universePlayersByName.get(normalizedEntity) ?? null;
 
     const input = {
@@ -489,19 +482,6 @@ export function useScoresExplorer(
     const validation = validateScore({ definition: score, evaluateInput: input, result });
     const debug = debugScore(result);
 
-    if (!metricsAvailable) {
-      return {
-        entityName,
-        score: 0,
-        grade: "indisponivel",
-        confidence: 0,
-        result,
-        explain,
-        validation,
-        debug,
-      };
-    }
-
     return {
       entityName,
       score: result.score ?? result.value ?? 0,
@@ -513,6 +493,7 @@ export function useScoresExplorer(
       debug,
     };
   };
+
 
   const selectedEvaluation = useMemo(() => {
     if (!selectedScore || !activeEntity) return null;
