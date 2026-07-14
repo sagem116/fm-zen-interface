@@ -1,98 +1,99 @@
-# Plano — Evolução Perfis, Pesquisa e Dashboard
+# Plano — Perfis Rápidos + Histórico de Imports
 
-Três áreas independentes. Todas reutilizam dados e componentes existentes. Nenhum cálculo é alterado.
-
----
-
-## 1. Perfil de Treinadores — Balanço de Transferências
-
-**Objetivo:** replicar no perfil do treinador a secção de mercado que já existe no perfil dos clubes.
-
-**Fonte de dados:** tabela `transfers` (já existe) — filtrando pelo treinador em vez do clube. Assumimos ligação via `coach_assignments` (treinador × clube × época) para atribuir cada transferência ao treinador em funções nessa época.
-
-**O que será mostrado:**
-- KPIs: total gasto, total recebido, balanço líquido, nº contratações, nº vendas.
-- Gráfico de evolução por época (barras receita/despesa + linha balanço).
-- Tabela top compras / top vendas.
-- Indicador de tendência (últimas 3 épocas vs anteriores).
-- Narrativa editorial curta ("perfil comprador/vendedor/equilibrado", baseada apenas nos rácios).
-
-**Reutilização:**
-- Componente `ClubTransfersSection` (ou equivalente já existente no perfil do clube) — extrair a UI para um componente genérico `TransfersBalanceSection` que aceita a origem dos dados.
-- Motor narrativo existente (`src/lib/editorial/engines`) — adicionar template `coach_market_policy`.
-
-**Ficheiros:**
-- Novo: `src/components/profile/tabs/CoachTransfersSection.tsx` (wrapper) ou reutilizar diretamente.
-- Novo: `src/lib/coach-transfers.ts` (agregação por treinador).
-- Editar: registry de tabs do perfil de treinador.
+Dois objetivos independentes, sem alterar arquitetura, Design System, Engines (Imports/Rankings/Scores/Entity) nem fórmulas.
 
 ---
 
-## 2. Pesquisa Global — Sticky + Command Palette Inteligente
+## Objetivo 1 — Perfis rápidos e estáveis
 
-**Objetivo:** transformar `GlobalSearch` numa pesquisa persistente, tolerante e agrupada.
+### Auditoria (pontos já identificados)
 
-**Comportamento:**
-- **Sticky:** mover para dentro do `AppShell` header com `position: sticky; top: 0`, sempre visível durante scroll. Atalho `⌘K` / `Ctrl+K` continua a abrir o painel completo.
-- **Command palette:** painel modal com secções agrupadas — Jogadores, Clubes, Treinadores, Competições, Países, Continentes.
-- **Tolerância:** normalização de acentos (`String.normalize("NFD")`), lowercase, fuzzy matching (usar `fuse.js` — já disponível ou instalar), suporte a aliases se existirem em `player_profiles`/`clubs`.
-- **Resultados relacionados:** para um jogador, mostrar também o clube atual e país; para um clube, treinador atual e país; etc. Ligar via joins existentes.
-- **Atalhos:**
-  - Pesquisas recentes (localStorage, max 8).
-  - Entidades visitadas recentemente (já existe histórico em `useRecruitmentSourceData` — reaproveitar padrão).
-  - Favoritos se a infra existir; caso contrário, deixar seção vazia (não criar do zero).
+1. **Crash ativo** em `src/routes/jogadores.$name.tsx`:
+   - Guard incorreto na linha 60: `if (!data && !fallbackProfile)` deveria ser `if (!profile && !fallbackProfile)`.
+   - Quando `data` existe mas o jogador não é encontrado, `usedProfile` fica `null` e `usedProfile.history` rebenta.
+   - Confirmado nos logs de runtime: `TypeError: Cannot read properties of null (reading 'history')` em `PlayerProfilePage`.
 
-**Ficheiros:**
-- Editar: `src/components/GlobalSearch.tsx` — reescrever como command palette (usar `cmdk` via shadcn `Command` que já está no projeto).
-- Editar: `src/components/AppShell.tsx` — barra sticky no topo.
-- Novo: `src/lib/global-search/index.ts` — indexação em memória + fuzzy.
-- Novo: `src/lib/global-search/recent.ts` — localStorage helper.
+2. **`useRankings()`** é o fetch mais pesado e é chamado por **todas** as páginas de perfil (jogadores, treinadores, clubes, competições, países). Carrega o dataset inteiro no primeiro acesso.
+   - Já é cacheado via TanStack Query, portanto reaproveita entre perfis.
+   - Problema: no **primeiro** perfil aberto após reload, todo o processamento (ranks, evolução, standings, coach assignments, etc.) corre antes do render inicial.
 
----
+3. **Cálculos pesados feitos em render** em cada perfil:
+   - `jogadores.$name.tsx`: `rankForYear` percorre `data.data.players` **por cada época** dentro de um `useMemo` que depende de `data`, `profile`, `fallbackProfile`, `universe` — dispara sempre que `universe` muda de referência.
+   - `narrativeCtx` reconstrói um `Map` sobre todos os jogadores para calcular o rank global.
+   - Padrões semelhantes em `treinadores.$name.tsx`, `clubes.$name.tsx`, `competicoes.$name.tsx`, `paises.$name.tsx`.
 
-## 3. Dashboard — Centro de Inteligência
+4. **Componentes secundários carregados de forma síncrona** dentro do `ProfileShell` (registry de tabs). Todas as tabs importam os módulos à cabeça mesmo quando o utilizador só vê a tab default.
 
-**Objetivo:** reorganizar e enriquecer, sem tocar em cálculos.
+### Alterações
 
-**Nova estrutura em blocos:**
-1. **Visão Geral** — KPIs de universo (jogadores, clubes, treinadores, competições, países, continentes) + histórico (épocas, primeiro/último ano, cobertura).
-2. **Atividade Recente** — últimos imports, resumo da época, alertas.
-3. **Evolução Histórica** — gráficos de tendência (nº jogadores, nº clubes, valor de mercado, transferências, rankings, scores) por época.
-4. **Inteligência** — insights automáticos (existente `insights` engine) agrupados: ascensão, declínio, dominância, recordes.
-5. **Destaques** — melhor jogador/clube/treinador/país, top scores, novos líderes, maiores compras/vendas.
+**Correções de robustez (prioridade 1 — resolve o crash)**
 
-**Novos cartões (todos derivados de dados existentes):**
-- `DashboardUniverse` — KPIs de universo + histórico.
-- `DashboardMarket` — totais de transferências, top compras/vendas.
-- `DashboardTopEntities` — melhor entidade por categoria.
-- `DashboardTrends` — sparklines/mini-charts de evolução.
-- `DashboardMovers` — maiores subidas/descidas recentes (já parcialmente em `biggestRise/Fall`).
+- `jogadores.$name.tsx`: corrigir o guard para `if (!profile && !fallbackProfile) return null;`.
+- Auditar guards equivalentes em `treinadores.$name.tsx`, `clubes.$name.tsx`, `competicoes.$name.tsx`, `paises.$name.tsx`. Todos devem:
+  - Verificar `profile`/`fallbackProfile` antes de aceder a `.history`, `.totals`, etc.
+  - Substituir acessos crus por optional chaining + defaults (`?? []`, `?? {}`).
+  - Devolver `"Sem dados disponíveis"` em vez de rebentar.
 
-**Personalização:**
-- Cada bloco envolvido em wrapper com `visible` + `order` guardado em localStorage (`dashboard-layout-v1`).
-- Diálogo "Personalizar Dashboard" (reaproveitar padrão de `SidebarCustomizeDialog`) — reordenar via drag ou setas, toggle visibilidade.
+**Performance (prioridade 2 — sem tocar em engines)**
 
-**Ficheiros:**
-- Novo: `src/components/dashboard/DashboardUniverse.tsx`, `DashboardMarket.tsx`, `DashboardTopEntities.tsx`, `DashboardTrends.tsx`, `DashboardMovers.tsx`, `DashboardCustomizeDialog.tsx`.
-- Novo: `src/hooks/useDashboardLayout.ts`.
-- Editar: `src/routes/index.tsx` — nova composição por blocos.
+- Extrair "ranking por época" para um `useMemo` que depende apenas de `data` (fica cacheado entre trocas de perfil). Reutilizado por todos os perfis via um pequeno seletor em `src/lib/useRankings.ts` (memo com `WeakMap` sobre o `data`).
+- Reduzir dependências dos `useMemo` em perfis: dropar `universe` das dependências dos cálculos que não o usam; usar `universe.getByName`/`getByIdu` fora do memo pesado.
+- Split de tabs secundárias em `React.lazy` no `registry` de tabs de perfil (a tab default fica eager, o resto lazy) — mantém o Design System intacto.
+
+**Robustez transversal**
+
+- Wrapper `<ProfileErrorBoundary>` à volta de `ProfileShell` que apanha crashes e mostra `"Sem dados disponíveis"` em vez do error component genérico do router. Cada tab valida `ctx?.profile?.history ?? []`.
+
+### Não-alvos (o que **não** vai ser mexido)
+
+- `useRankings`, `buildPlayerProfile`, `buildCoachProfile`, etc. (engines).
+- Estrutura de tabelas ou tipos.
+- Estilos, tokens CSS, componentes de UI do shell.
+- Fórmulas de Scores, Rankings, Editorial.
 
 ---
 
-## Detalhes Técnicos
+## Objetivo 2 — Histórico de Imports
 
-- Todas as narrativas usam `src/lib/editorial/engines` — apenas novos templates, sem inventar dados.
-- Persistência local via `localStorage` (pesquisas recentes, layout do Dashboard).
-- Fuzzy: usar `cmdk`+ normalização manual; adicionar `fuse.js` só se `cmdk` sozinho não chegar.
-- Sem migrações de base de dados — tudo assenta em tabelas existentes.
-- Cada área é entregue de forma incremental; podemos validar a Área 1 antes de avançar para as seguintes se preferires.
+### Auditoria
+
+- `imports` é gravado por vários writers (`fm-player-profiles-writer.ts`, etc.) com `warnings: { messages: [...], records: N }` — estrutura antiga.
+- Writers mais recentes gravam `warnings` como **array** direto (`generateImportReport`) ou como objeto rico com `statistics`, `resolvedColumns`, `trace`.
+- A UI de detalhes lê apenas um dos formatos → contadores a 0 e avisos sem detalhe quando o formato não bate.
+
+### Alterações (só na leitura/apresentação)
+
+- Adicionar um **normalizador** `normalizeImportReport(raw)` em `src/lib/imports/report.ts` que aceita todas as variantes (`warnings: []`, `warnings: { messages }`, `warnings: { messages, records }`, `warnings: ImportReport`) e devolve sempre a mesma forma:
+  ```
+  {
+    stats: { players, coaches, clubs, competitions, countries, created, updated, skipped, errors, warnings, durationMs },
+    warnings: Array<{ type, message, source, severity }>,
+    raw
+  }
+  ```
+- `ImportReportViewer.tsx` passa a usar o normalizador. Se um campo não existir, mostra "—", nunca 0 fantasma.
+- Detalhe dos avisos: expandir cada linha para mostrar `type`, `message`, `source`, `severity` (fallbacks para variantes antigas).
+- Contador de avisos deixa de aparecer sem lista: se `warnings.length === 0`, não mostrar chip; se >0, sempre expansível.
+
+### Não-alvos
+
+- Nenhuma alteração aos writers, ao pipeline de import, ao formato gravado em BD, ou aos engines de Rankings/Scores.
+- Compatibilidade total com registos existentes (o normalizador cobre todos os formatos históricos).
 
 ---
 
-## Ordem de Execução Sugerida
+## Validação
 
-1. **Perfil Treinador — Transferências** (menor risco, valor imediato).
-2. **Pesquisa Global** (impacto UX transversal).
-3. **Dashboard** (maior scope, beneficia da nova pesquisa).
+- Playwright: abrir 5 perfis (jogador conhecido, jogador inexistente, treinador, clube, país) — todos abrem sem crash; jogador inexistente mostra "Sem dados disponíveis".
+- Playwright: abrir `/importar`, expandir 3 imports (um com warnings, um só ok, um antigo) — todos apresentam contadores corretos e lista de avisos com detalhe.
+- Confirmar que Rankings, Scores e Dashboard continuam a funcionar.
 
-Confirma se avanço nesta ordem, ou se preferes outra prioridade / entregar apenas uma das áreas primeiro.
+## Ficheiros que serão tocados (estimativa)
+
+- `src/routes/jogadores.$name.tsx`, `treinadores.$name.tsx`, `clubes.$name.tsx`, `competicoes.$name.tsx`, `paises.$name.tsx` — guards + robustez.
+- `src/components/profile/ProfileShell.tsx` + `registry.ts` — error boundary + lazy tabs.
+- `src/lib/useRankings.ts` — seletor memoizado de rank-por-época (opcional).
+- `src/lib/imports/report.ts` — adiciona `normalizeImportReport`.
+- `src/components/ImportReportViewer.tsx` — usa o normalizador + detalhe de avisos.
+
+Aprova para eu executar?
