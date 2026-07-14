@@ -1410,3 +1410,625 @@ html.theme-neon [data-slot="skeleton"] {
   0% { background-position: 200% 0; }
   100% { background-position: -200% 0; }
 }
+
+/* =========================================================
+   EMBER PULSE — Editorial dark theme, warm black canvas with
+   vivid orange energy. Different structural feel from Neon:
+   soft rounded surfaces, glowing pulsing accents, warm glass,
+   editorial typography. Scoped to html.theme-ember.
+   ========================================================= */
+.theme-ember {
+  --radius: 1rem;
+  --background: oklch(0.16 0.015 40);
+  --foreground: oklch(0.97 0.02 70);
+  --card: oklch(0.2 0.025 40 / 82%);
+  --card-foreground: oklch(0.97 0.02 70);
+  --popover: oklch(0.18 0.03 40 / 96%);
+  --popover-foreground: oklch(0.97 0.02 70);
+  --primary: oklch(0.72 0.22 50);
+  --primary-foreground: oklch(0.14 0.02 40);
+  --secondary: oklch(0.26 0.05 45);
+  --secondary-foreground: oklch(0.97 0.02 70);
+  --muted: oklch(0.22 0.03 40);
+  --muted-foreground: oklch(0.74 0.06 60);
+  --accent: oklch(0.32 0.08 50);
+  --accent-foreground: oklch(0.97 0.02 70);
+  --destructive: oklch(0.62 0.24 22);
+  --destructive-foreground: oklch(0.98 0.01 90);
+  --success: oklch(0.75 0.16 145);
+  --border: oklch(0.72 0.22 50 / 22%);
+  --input: oklch(0.2 0.03 40 / 85%);
+  --ring: oklch(0.75 0.22 50);
+  --gold: oklch(0.75 0.22 50);
+  --gold-soft: oklch(0.82 0.18 60);
+  --gold-deep: oklch(0.55 0.22 35);
+  --chart-1: oklch(0.75 0.22 50);
+  --chart-2: oklch(0.68 0.2 30);
+  --chart-3: oklch(0.82 0.16 75);
+  --chart-4: oklch(0.6 0.2 20);
+  --chart-5: oklch(0.72 0.15 60);
+  --sidebar: oklch(0.13 0.015 40 / 88%);
+  --sidebar-foreground: oklch(0.94 0.03 60);
+  --sidebar-primary: oklch(0.75 0.22 50);
+  --sidebar-primary-foreground: oklch(0.14 0.02 40);
+  --sidebar-accent: oklch(0.22 0.04 45 / 80%);
+  --sidebar-accent-foreground: oklch(0.97 0.02 70);
+  --sidebar-border: oklch(0.72 0.22 50 / 20%);
+  --sidebar-ring: oklch(0.75 0.22 50);
+  /* Ember-specific accent tokens */
+  --ember-flame: oklch(0.75 0.22 50);
+  --ember-glow: oklch(0.82 0.19 65);
+  --ember-deep: oklch(0.55 0.22 32);
+  --ember-red: oklch(0.62 0.24 22);
+  --ember-amber: oklch(0.85 0.17 80);
+  --ember-font-display: "Space Grotesk", system-ui, sans-serif;
+  --ember-font-ui: "Inter", system-ui, sans-serif;
+  --ember-font-mono: "JetBrains Mono", ui-monospace, monospace;
+}
+
+/* Warm cinematic background with soft ember lights */
+html.theme-ember body {
+  font-family: var(--ember-font-ui);
+  background:
+    radial-gradient(ellipse 55% 45% at 15% 5%, oklch(0.75 0.22 50 / 0.16) 0%, transparent 60%),
+    radial-gradient(ellipse 45% 40% at 90% 12%, oklch(0.62 0.24 22 / 0.14) 0%, transparent 65%),
+    radial-gradient(ellipse 70% 45% at 50% 100%, oklch(0.82 0.19 65 / 0.1) 0%, transparent 65%),
+    linear-gradient(180deg, oklch(0.14 0.015 40) 0%, oklch(0.11 0.01 35) 100%);
+  background-attachment: fixed;
+  color: oklch(0.97 0.02 70);
+}
+html.theme-ember body::before {
+  content: "";
+  position: fixed;
+  inset: 0;
+  pointer-events: none;
+  background:
+    radial-gradient(1px 1px at 20% 30%, oklch(0.85 0.17 80 / 0.35), transparent 60%),
+    radial-gradient(1px 1px at 70% 60%, oklch(0.75 0.22 50 / 0.3), transparent 60%),
+    radial-gradient(1px 1px at 45% 80%, oklch(0.82 0.19 65 / 0.28), transparent 60%),
+    radial-gradient(1px 1px at 85% 22%, oklch(0.85 0.17 80 / 0.25), transparent 60%);
+  z-index: 0;
+}
+
+html.theme-ember h1,
+html.theme-ember h2,
+html.theme-ember h3 {
+  font-family: var(--ember-font-display);
+  letter-spacing: -0.015em;
+  font-weight: 700;
+}
+
+/* --------------- SIDEBAR --------------- */
+html.theme-ember [data-slot="sidebar-container"] {
+  background:
+    linear-gradient(180deg, oklch(0.14 0.02 40 / 0.9) 0%, oklch(0.1 0.01 35 / 0.94) 100%);
+  backdrop-filter: blur(20px) saturate(140%);
+  border-right: 1px solid oklch(0.75 0.22 50 / 0.2);
+}
+html.theme-ember [data-slot="sidebar-container"]::after {
+  content: "";
+  position: absolute;
+  top: 0; right: 0;
+  width: 1px; height: 100%;
+  background: linear-gradient(180deg, transparent, var(--ember-flame), transparent);
+  opacity: 0.5;
+  pointer-events: none;
+}
+html.theme-ember [data-sidebar="group-label"] {
+  color: oklch(0.78 0.1 60);
+  font-weight: 600;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+  font-size: 0.68rem;
+}
+html.theme-ember [data-sidebar="menu-button"] {
+  border-radius: 12px;
+  height: 2.6rem;
+  padding: 0 0.9rem;
+  gap: 0.75rem;
+  font-weight: 500;
+  transition: all 240ms ease;
+  position: relative;
+  overflow: hidden;
+}
+html.theme-ember [data-sidebar="menu-button"]:hover {
+  background: linear-gradient(90deg, oklch(0.75 0.22 50 / 0.14), transparent 80%);
+  color: oklch(0.98 0.03 70);
+}
+html.theme-ember [data-sidebar="menu-button"][data-active="true"] {
+  background: linear-gradient(90deg, oklch(0.75 0.22 50 / 0.22), oklch(0.62 0.24 22 / 0.1));
+  color: oklch(0.98 0.03 70);
+  box-shadow:
+    inset 0 0 0 1px oklch(0.75 0.22 50 / 0.4),
+    0 0 24px -6px oklch(0.75 0.22 50 / 0.55);
+}
+html.theme-ember [data-sidebar="menu-button"][data-active="true"]::before {
+  content: "";
+  position: absolute;
+  left: 0; top: 18%; bottom: 18%;
+  width: 3px;
+  border-radius: 3px;
+  background: linear-gradient(180deg, var(--ember-amber), var(--ember-flame), var(--ember-red));
+  box-shadow: 0 0 12px var(--ember-flame);
+  animation: emberPulse 2.4s ease-in-out infinite;
+}
+html.theme-ember [data-sidebar="menu-button"] svg {
+  width: 1.15rem; height: 1.15rem;
+}
+
+/* --------------- HEADER --------------- */
+html.theme-ember header {
+  background: linear-gradient(180deg, oklch(0.14 0.02 40 / 0.85), oklch(0.11 0.01 35 / 0.5));
+  backdrop-filter: blur(16px) saturate(140%);
+  border-bottom: 1px solid oklch(0.75 0.22 50 / 0.18) !important;
+  position: relative;
+}
+html.theme-ember header::after {
+  content: "";
+  position: absolute;
+  left: 0; right: 0; bottom: -1px;
+  height: 1px;
+  background: linear-gradient(90deg, transparent, var(--ember-flame), var(--ember-amber), var(--ember-red), transparent);
+  opacity: 0.7;
+}
+
+/* --------------- CARDS — Warm glass with ember rim --------------- */
+html.theme-ember [data-slot="card"] {
+  position: relative;
+  border-radius: 16px;
+  background:
+    linear-gradient(180deg, oklch(0.2 0.03 40 / 0.6) 0%, oklch(0.14 0.02 40 / 0.75) 100%);
+  border: 1px solid oklch(0.75 0.22 50 / 0.2);
+  backdrop-filter: blur(18px) saturate(135%);
+  box-shadow:
+    0 1px 0 oklch(1 0 0 / 0.04) inset,
+    0 0 0 1px oklch(0.75 0.22 50 / 0.04),
+    0 26px 60px -30px oklch(0 0 0 / 0.9);
+  overflow: hidden;
+  transition: border-color 300ms ease, box-shadow 320ms ease, transform 260ms ease;
+}
+/* Ember rim light */
+html.theme-ember [data-slot="card"]::before {
+  content: "";
+  position: absolute;
+  inset: -1px;
+  border-radius: inherit;
+  padding: 1px;
+  background: linear-gradient(140deg, oklch(0.75 0.22 50 / 0.55), transparent 30%, transparent 70%, oklch(0.62 0.24 22 / 0.45));
+  -webkit-mask: linear-gradient(#000 0 0) content-box, linear-gradient(#000 0 0);
+  -webkit-mask-composite: xor;
+  mask-composite: exclude;
+  pointer-events: none;
+  opacity: 0.7;
+  transition: opacity 300ms ease;
+}
+/* Warm top-inner glow */
+html.theme-ember [data-slot="card"]::after {
+  content: "";
+  position: absolute;
+  left: 0; right: 0; top: 0;
+  height: 60%;
+  background: radial-gradient(ellipse 70% 100% at 50% 0%, oklch(0.75 0.22 50 / 0.1), transparent 70%);
+  pointer-events: none;
+}
+html.theme-ember [data-slot="card"]:hover {
+  border-color: oklch(0.75 0.22 50 / 0.5);
+  transform: translateY(-2px);
+  box-shadow:
+    0 0 0 1px oklch(0.75 0.22 50 / 0.18),
+    0 0 40px -8px oklch(0.75 0.22 50 / 0.45),
+    0 30px 70px -25px oklch(0 0 0 / 0.95);
+}
+html.theme-ember [data-slot="card"]:hover::before {
+  opacity: 1;
+}
+html.theme-ember [data-slot="card-header"] {
+  border-bottom: 1px solid oklch(0.75 0.22 50 / 0.12);
+  padding-bottom: 0.85rem;
+  margin-bottom: 0.85rem;
+}
+html.theme-ember [data-slot="card-title"] {
+  font-family: var(--ember-font-display);
+  font-weight: 700;
+  letter-spacing: -0.005em;
+}
+
+/* KPI numbers — molten gradient */
+html.theme-ember [data-slot="card"] .text-2xl,
+html.theme-ember [data-slot="card"] .text-3xl,
+html.theme-ember [data-slot="card"] .text-4xl,
+html.theme-ember [data-slot="card"] .text-5xl {
+  font-family: var(--ember-font-display);
+  font-weight: 700;
+  background: linear-gradient(120deg, oklch(0.98 0.05 80), var(--ember-amber) 45%, var(--ember-flame) 75%, var(--ember-red));
+  -webkit-background-clip: text;
+  background-clip: text;
+  color: transparent;
+  text-shadow: 0 0 30px oklch(0.75 0.22 50 / 0.3);
+  font-variant-numeric: tabular-nums;
+}
+
+/* --------------- BUTTONS — vibrant, pulsing --------------- */
+html.theme-ember [data-slot="button"] {
+  font-family: var(--ember-font-ui);
+  font-weight: 600;
+  letter-spacing: 0.02em;
+  border-radius: 999px;
+  transition:
+    transform 200ms ease,
+    box-shadow 300ms ease,
+    background 300ms ease,
+    filter 200ms ease;
+  position: relative;
+  isolation: isolate;
+}
+html.theme-ember [data-slot="button"]:hover {
+  transform: translateY(-1px);
+}
+html.theme-ember [data-slot="button"]:active {
+  transform: translateY(0) scale(0.97);
+}
+
+/* Primary — molten glowing pill with pulsing halo */
+html.theme-ember [data-slot="button"].bg-primary {
+  background: linear-gradient(120deg, var(--ember-amber) 0%, var(--ember-flame) 45%, var(--ember-red) 100%);
+  color: oklch(0.14 0.02 40);
+  border: 1px solid oklch(1 0 0 / 0.15);
+  box-shadow:
+    0 0 0 1px oklch(0.75 0.22 50 / 0.4),
+    0 8px 26px -6px oklch(0.75 0.22 50 / 0.65),
+    inset 0 1px 0 oklch(1 0 0 / 0.35);
+  animation: emberButtonPulse 2.8s ease-in-out infinite;
+}
+html.theme-ember [data-slot="button"].bg-primary::before {
+  content: "";
+  position: absolute;
+  inset: -3px;
+  border-radius: inherit;
+  background: linear-gradient(120deg, var(--ember-amber), var(--ember-flame), var(--ember-red));
+  filter: blur(14px);
+  opacity: 0.55;
+  z-index: -1;
+  animation: emberHalo 2.8s ease-in-out infinite;
+}
+html.theme-ember [data-slot="button"].bg-primary:hover {
+  filter: brightness(1.1) saturate(1.12);
+  box-shadow:
+    0 0 0 1px oklch(0.75 0.22 50 / 0.55),
+    0 14px 40px -6px oklch(0.75 0.22 50 / 0.85),
+    inset 0 1px 0 oklch(1 0 0 / 0.5);
+}
+/* Outline / secondary */
+html.theme-ember [data-slot="button"].border-input {
+  background: linear-gradient(180deg, oklch(0.2 0.03 40 / 0.6), oklch(0.14 0.02 40 / 0.75));
+  border: 1px solid oklch(0.75 0.22 50 / 0.32);
+  color: oklch(0.96 0.04 70);
+  backdrop-filter: blur(10px);
+}
+html.theme-ember [data-slot="button"].border-input:hover {
+  border-color: var(--ember-flame);
+  box-shadow:
+    0 0 0 1px var(--ember-flame),
+    0 0 22px -4px oklch(0.75 0.22 50 / 0.6);
+  color: oklch(0.98 0.05 70);
+}
+
+/* --------------- INPUTS --------------- */
+html.theme-ember input,
+html.theme-ember textarea,
+html.theme-ember [data-slot="input"] {
+  background: oklch(0.13 0.02 40 / 0.7) !important;
+  border: 1px solid oklch(0.75 0.22 50 / 0.25) !important;
+  border-radius: 12px;
+  color: oklch(0.97 0.03 70);
+  transition: border-color 220ms ease, box-shadow 260ms ease;
+}
+html.theme-ember input::placeholder,
+html.theme-ember textarea::placeholder {
+  color: oklch(0.62 0.05 55);
+}
+html.theme-ember input:focus-visible,
+html.theme-ember textarea:focus-visible {
+  border-color: var(--ember-flame) !important;
+  box-shadow:
+    0 0 0 3px oklch(0.75 0.22 50 / 0.18),
+    0 0 24px -6px oklch(0.75 0.22 50 / 0.65) !important;
+  outline: none;
+}
+
+/* --------------- TABLES --------------- */
+html.theme-ember thead th,
+html.theme-ember [data-slot="table-header"] th {
+  background: linear-gradient(180deg, oklch(0.22 0.05 45 / 0.9), oklch(0.14 0.02 40 / 0.9));
+  color: oklch(0.85 0.1 60) !important;
+  font-weight: 600;
+  text-transform: uppercase;
+  letter-spacing: 0.1em;
+  font-size: 0.72rem !important;
+  padding-top: 0.85rem !important;
+  padding-bottom: 0.85rem !important;
+  border-bottom: 1px solid oklch(0.75 0.22 50 / 0.3) !important;
+  position: relative;
+}
+html.theme-ember thead th::after,
+html.theme-ember [data-slot="table-header"] th::after {
+  content: "";
+  position: absolute;
+  left: 12px; right: 12px; bottom: 0;
+  height: 1px;
+  background: linear-gradient(90deg, transparent, var(--ember-flame), transparent);
+  opacity: 0.4;
+}
+html.theme-ember tbody tr,
+html.theme-ember [data-slot="table-row"] {
+  transition: background 240ms ease;
+  position: relative;
+}
+html.theme-ember tbody tr::before,
+html.theme-ember [data-slot="table-row"]::before {
+  content: "";
+  position: absolute;
+  left: 0; top: 6px; bottom: 6px;
+  width: 3px;
+  border-radius: 0 3px 3px 0;
+  background: transparent;
+  transition: background 240ms ease, box-shadow 280ms ease;
+}
+html.theme-ember tbody tr:hover,
+html.theme-ember [data-slot="table-row"]:hover {
+  background: linear-gradient(90deg, oklch(0.75 0.22 50 / 0.09), transparent 65%);
+}
+html.theme-ember tbody tr:hover::before,
+html.theme-ember [data-slot="table-row"]:hover::before {
+  background: linear-gradient(180deg, var(--ember-amber), var(--ember-flame));
+  box-shadow: 0 0 12px var(--ember-flame);
+}
+html.theme-ember tbody tr[data-state="selected"]::before,
+html.theme-ember [data-slot="table-row"][data-state="selected"]::before {
+  background: linear-gradient(180deg, var(--ember-flame), var(--ember-red));
+  box-shadow: 0 0 14px var(--ember-red);
+}
+html.theme-ember tbody td,
+html.theme-ember [data-slot="table-cell"] {
+  border-bottom: 1px solid oklch(0.75 0.22 50 / 0.08) !important;
+  padding-top: 0.8rem !important;
+  padding-bottom: 0.8rem !important;
+}
+
+/* --------------- BADGES --------------- */
+html.theme-ember [data-slot="badge"] {
+  border-radius: 999px;
+  font-weight: 600;
+  padding: 0.15rem 0.7rem;
+  background: linear-gradient(180deg, oklch(0.22 0.05 45 / 0.7), oklch(0.14 0.02 40 / 0.85));
+  border: 1px solid oklch(0.75 0.22 50 / 0.35);
+  color: oklch(0.9 0.1 70);
+}
+html.theme-ember [data-slot="badge"].bg-primary {
+  background: linear-gradient(120deg, var(--ember-amber), var(--ember-flame), var(--ember-red));
+  color: oklch(0.14 0.02 40);
+  border-color: transparent;
+  box-shadow: 0 0 14px -2px oklch(0.75 0.22 50 / 0.7);
+}
+
+/* --------------- TABS --------------- */
+html.theme-ember [data-slot="tabs-list"] {
+  background: oklch(0.14 0.02 40 / 0.7);
+  border: 1px solid oklch(0.75 0.22 50 / 0.22);
+  padding: 4px;
+  border-radius: 999px;
+  gap: 4px;
+}
+html.theme-ember [data-slot="tabs-trigger"] {
+  border-radius: 999px;
+  font-weight: 600;
+  padding: 0.4rem 1rem;
+  transition: all 260ms ease;
+}
+html.theme-ember [data-slot="tabs-trigger"][data-state="active"] {
+  background: linear-gradient(120deg, var(--ember-amber), var(--ember-flame), var(--ember-red));
+  color: oklch(0.14 0.02 40);
+  box-shadow: 0 0 22px -6px oklch(0.75 0.22 50 / 0.7);
+}
+
+/* --------------- POPOVER / DIALOG / DROPDOWN / TOOLTIP / SHEET --------------- */
+html.theme-ember [data-slot="popover-content"],
+html.theme-ember [data-slot="dropdown-menu-content"],
+html.theme-ember [data-slot="select-content"],
+html.theme-ember [data-slot="command"],
+html.theme-ember [data-slot="dialog-content"],
+html.theme-ember [data-slot="sheet-content"],
+html.theme-ember [data-slot="hover-card-content"],
+html.theme-ember [data-slot="tooltip-content"],
+html.theme-ember [data-slot="menubar-content"] {
+  background: linear-gradient(180deg, oklch(0.18 0.03 40 / 0.96), oklch(0.12 0.015 40 / 0.98)) !important;
+  backdrop-filter: blur(22px) saturate(150%);
+  border: 1px solid oklch(0.75 0.22 50 / 0.32) !important;
+  border-radius: 16px !important;
+  box-shadow:
+    0 0 0 1px oklch(0.75 0.22 50 / 0.12),
+    0 30px 80px -20px oklch(0 0 0 / 0.9),
+    0 0 44px -12px oklch(0.75 0.22 50 / 0.35) !important;
+  animation: emberSlide 240ms ease-out;
+}
+html.theme-ember [data-slot="tooltip-content"] {
+  border-radius: 8px !important;
+  padding: 0.4rem 0.65rem;
+  font-size: 0.78rem;
+}
+
+html.theme-ember [data-slot="dropdown-menu-item"]:focus,
+html.theme-ember [data-slot="dropdown-menu-item"][data-highlighted],
+html.theme-ember [data-slot="select-item"][data-highlighted],
+html.theme-ember [data-slot="command-item"][data-selected="true"] {
+  background: linear-gradient(90deg, oklch(0.75 0.22 50 / 0.2), oklch(0.62 0.24 22 / 0.08));
+  color: oklch(0.98 0.03 70);
+  border-radius: 8px;
+}
+
+/* --------------- COMMAND PALETTE --------------- */
+html.theme-ember [cmdk-group-heading] {
+  color: var(--ember-flame) !important;
+  font-weight: 600;
+  text-transform: uppercase;
+  letter-spacing: 0.14em;
+  font-size: 0.68rem !important;
+}
+html.theme-ember [cmdk-item][data-selected="true"] {
+  background: linear-gradient(90deg, oklch(0.75 0.22 50 / 0.18), transparent) !important;
+  box-shadow: inset 3px 0 0 var(--ember-flame);
+}
+
+/* --------------- TOAST --------------- */
+html.theme-ember [data-sonner-toast],
+html.theme-ember [data-slot="toast"] {
+  background: linear-gradient(180deg, oklch(0.18 0.03 40 / 0.96), oklch(0.12 0.015 40 / 0.98)) !important;
+  border: 1px solid oklch(0.75 0.22 50 / 0.35) !important;
+  border-radius: 14px !important;
+  color: oklch(0.97 0.03 70) !important;
+  box-shadow:
+    0 0 0 1px oklch(0.75 0.22 50 / 0.15),
+    0 0 40px -8px oklch(0.75 0.22 50 / 0.5),
+    0 25px 50px -20px oklch(0 0 0 / 0.85) !important;
+  position: relative;
+  overflow: hidden;
+}
+html.theme-ember [data-sonner-toast]::before {
+  content: "";
+  position: absolute;
+  left: 0; top: 0; bottom: 0;
+  width: 4px;
+  background: linear-gradient(180deg, var(--ember-amber), var(--ember-flame), var(--ember-red));
+  box-shadow: 0 0 14px var(--ember-flame);
+  animation: emberPulse 2.6s ease-in-out infinite;
+}
+
+/* --------------- ACCORDION --------------- */
+html.theme-ember [data-slot="accordion-item"] {
+  border-bottom: 1px solid oklch(0.75 0.22 50 / 0.14) !important;
+}
+html.theme-ember [data-slot="accordion-trigger"] {
+  font-weight: 600;
+  transition: color 220ms ease;
+}
+html.theme-ember [data-slot="accordion-trigger"]:hover {
+  color: var(--ember-flame);
+}
+
+/* --------------- SCROLLBAR --------------- */
+html.theme-ember ::-webkit-scrollbar {
+  width: 10px;
+  height: 10px;
+}
+html.theme-ember ::-webkit-scrollbar-track {
+  background: oklch(0.1 0.01 35 / 0.5);
+}
+html.theme-ember ::-webkit-scrollbar-thumb {
+  background: linear-gradient(180deg, var(--ember-amber), var(--ember-flame), var(--ember-red));
+  border-radius: 999px;
+  box-shadow: 0 0 10px oklch(0.75 0.22 50 / 0.5);
+}
+html.theme-ember ::-webkit-scrollbar-thumb:hover {
+  filter: brightness(1.15);
+}
+
+/* --------------- CHARTS --------------- */
+html.theme-ember .recharts-default-tooltip {
+  background: linear-gradient(180deg, oklch(0.18 0.03 40 / 0.96), oklch(0.12 0.015 40 / 0.98)) !important;
+  border: 1px solid oklch(0.75 0.22 50 / 0.4) !important;
+  border-radius: 12px !important;
+  box-shadow: 0 0 30px -6px oklch(0.75 0.22 50 / 0.45) !important;
+}
+html.theme-ember .recharts-cartesian-grid line {
+  stroke: oklch(0.75 0.22 50 / 0.14) !important;
+  stroke-dasharray: 2 5;
+}
+html.theme-ember .recharts-cartesian-axis-tick text {
+  fill: oklch(0.75 0.08 60) !important;
+  font-size: 11px;
+}
+
+/* --------------- SWITCH / PROGRESS / SLIDER --------------- */
+html.theme-ember [data-slot="switch"][data-state="checked"] {
+  background: linear-gradient(120deg, var(--ember-amber), var(--ember-flame), var(--ember-red)) !important;
+  box-shadow: 0 0 14px -2px oklch(0.75 0.22 50 / 0.75);
+}
+html.theme-ember [data-slot="progress-indicator"] {
+  background: linear-gradient(90deg, var(--ember-amber), var(--ember-flame), var(--ember-red));
+  box-shadow: 0 0 12px -2px oklch(0.75 0.22 50 / 0.7);
+}
+html.theme-ember [data-slot="slider-range"] {
+  background: linear-gradient(90deg, var(--ember-amber), var(--ember-flame), var(--ember-red));
+  box-shadow: 0 0 8px oklch(0.75 0.22 50 / 0.6);
+}
+html.theme-ember [data-slot="slider-thumb"] {
+  background: oklch(0.14 0.02 40);
+  border: 2px solid var(--ember-flame);
+  box-shadow: 0 0 12px oklch(0.75 0.22 50 / 0.8);
+}
+
+/* --------------- SEPARATOR / BREADCRUMB / LINKS --------------- */
+html.theme-ember [data-slot="separator"] {
+  background: linear-gradient(90deg, transparent, oklch(0.75 0.22 50 / 0.5), transparent);
+  height: 1px;
+}
+html.theme-ember [data-slot="breadcrumb-separator"] svg {
+  color: var(--ember-flame);
+  opacity: 0.7;
+}
+html.theme-ember a:hover {
+  color: var(--ember-flame);
+}
+html.theme-ember ::selection {
+  background: oklch(0.75 0.22 50 / 0.45);
+  color: oklch(0.14 0.02 40);
+}
+html.theme-ember *:focus-visible {
+  outline: 1px solid var(--ember-flame);
+  outline-offset: 2px;
+}
+
+/* --------------- SKELETON --------------- */
+html.theme-ember [data-slot="skeleton"] {
+  background: linear-gradient(
+    90deg,
+    oklch(0.2 0.03 40 / 0.6) 0%,
+    oklch(0.75 0.22 50 / 0.18) 50%,
+    oklch(0.2 0.03 40 / 0.6) 100%
+  );
+  background-size: 200% 100%;
+  animation: emberShimmer 1.8s ease-in-out infinite;
+  border-radius: 10px;
+}
+
+/* --------------- KEYFRAMES --------------- */
+@keyframes emberPulse {
+  0%, 100% { opacity: 0.85; filter: brightness(1); }
+  50%      { opacity: 1;    filter: brightness(1.25); }
+}
+@keyframes emberButtonPulse {
+  0%, 100% {
+    box-shadow:
+      0 0 0 1px oklch(0.75 0.22 50 / 0.4),
+      0 8px 26px -6px oklch(0.75 0.22 50 / 0.55),
+      inset 0 1px 0 oklch(1 0 0 / 0.35);
+  }
+  50% {
+    box-shadow:
+      0 0 0 1px oklch(0.75 0.22 50 / 0.6),
+      0 12px 38px -6px oklch(0.75 0.22 50 / 0.9),
+      inset 0 1px 0 oklch(1 0 0 / 0.45);
+  }
+}
+@keyframes emberHalo {
+  0%, 100% { opacity: 0.5; transform: scale(1); }
+  50%      { opacity: 0.85; transform: scale(1.04); }
+}
+@keyframes emberSlide {
+  0% { transform: translateY(4px); opacity: 0; }
+  100% { transform: translateY(0); opacity: 1; }
+}
+@keyframes emberShimmer {
+  0%   { background-position: 200% 0; }
+  100% { background-position: -200% 0; }
+}
