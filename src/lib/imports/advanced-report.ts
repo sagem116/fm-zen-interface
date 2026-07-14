@@ -499,22 +499,88 @@ export function buildAdvancedReport(opts: {
   };
 }
 
-/** Extract the stored ImportReport from a row's warnings payload. */
+/** Extract the stored ImportReport from a row's warnings payload.
+ *  Supports three shapes:
+ *   1. New rich report:      { report: ImportReport }
+ *   2. Direct ImportReport:  { pipeline, timings, statistics, ... }
+ *   3. Legacy warnings blob: { messages: string[], records, totalRows?, skipped?, duplicates? }
+ */
 export function extractRawReport(warnings: unknown): ImportReport | null {
   if (!warnings || typeof warnings !== "object") return null;
   const w = warnings as Record<string, unknown>;
+
   if (w.report && typeof w.report === "object") {
     return w.report as ImportReport;
   }
-  // Some older rows stored the warnings payload directly as a report
-  if (
-    "pipeline" in w &&
-    "timings" in w &&
-    "statistics" in w
-  ) {
+  if ("pipeline" in w && "timings" in w && "statistics" in w) {
     return w as unknown as ImportReport;
   }
+
+  // Legacy shape from earlier writers — synthesize a minimal ImportReport so
+  // the viewer shows real counters and the full list of warning messages.
+  if (Array.isArray(w.messages) || "records" in w || "totalRows" in w) {
+    return synthesizeLegacyReport(w);
+  }
   return null;
+}
+
+function classifyLegacyMessage(msg: string): PipelineIssue {
+  const m = String(msg ?? "").trim();
+  if (/^Unknown column:/i.test(m)) {
+    return { code: "unknown_column", level: "warning", message: m, header: m.replace(/^Unknown column:\s*/i, "") };
+  }
+  if (/^Duplicate dictionary column/i.test(m)) {
+    return { code: "duplicate_column", level: "warning", message: m };
+  }
+  if (/^Import group mismatch/i.test(m)) {
+    return { code: "incompatible_import_group", level: "warning", message: m };
+  }
+  if (/ignorada|skipped/i.test(m)) {
+    return { code: "unknown_column", level: "warning", message: m };
+  }
+  return { code: "unknown_column", level: "warning", message: m };
+}
+
+function synthesizeLegacyReport(w: Record<string, unknown>): ImportReport {
+  const messages: string[] = Array.isArray(w.messages)
+    ? (w.messages as unknown[]).map((x) => String(x))
+    : [];
+  const warnings: PipelineIssue[] = messages.map(classifyLegacyMessage);
+
+  const records = typeof w.records === "number" ? w.records : 0;
+  const totalRows = typeof w.totalRows === "number" ? w.totalRows : records;
+  const skipped = typeof w.skipped === "number" ? w.skipped : 0;
+  const duplicates = typeof w.duplicates === "number" ? w.duplicates : 0;
+
+  return {
+    pipeline: {
+      entity: "player" as never,
+      importGroup: "player_profile" as never,
+      adapter: "legacy",
+    },
+    timings: { reader: 0, resolver: 0, validator: 0, mapper: 0, dispatcher: 0, total: 0 },
+    statistics: {
+      workbook: null,
+      sheets: 0,
+      rows: totalRows,
+      headers: 0,
+      resolvedColumns: 0,
+      manuallyResolvedColumns: 0,
+      unknownColumns: warnings.filter((w) => w.code === "unknown_column").length,
+      duplicateColumns: duplicates || warnings.filter((w) => w.code === "duplicate_column").length,
+      aliasesUsed: 0,
+      warnings: warnings.length,
+      errors: 0,
+      skippedRows: skipped,
+      importedRows: records,
+    },
+    resolvedColumns: [],
+    unknownColumns: [],
+    ambiguousAliases: [],
+    warnings,
+    errors: [],
+    trace: [],
+  };
 }
 
 /** Format ms duration into human-readable string. */

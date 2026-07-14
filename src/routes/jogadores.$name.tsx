@@ -57,9 +57,10 @@ function PlayerProfilePage() {
   }, [profile, universe, name]);
 
   const ctx = useMemo<ProfileContext | null>(() => {
-    if (!data && !fallbackProfile) return null;
-    const usedProfile = profile ?? fallbackProfile!;
-    const last = usedProfile.history ? [...usedProfile.history].reverse().find((h) => h.club) : null;
+    const usedProfile = profile ?? fallbackProfile;
+    if (!usedProfile) return null;
+    const history = usedProfile.history ?? [];
+    const last = history.length ? [...history].reverse().find((h) => h?.club) : null;
     const uni = universe.getByIdu((usedProfile as any).idu) ?? universe.getByName(usedProfile.name);
     const country = uni?.country ?? (last?.club ? (data?.data.clubCountry[last.club] ?? null) : null);
     const peakCa = usedProfile.history?.reduce((m: number, h: any) => (h.ca > m ? h.ca : m), 0) ?? 0;
