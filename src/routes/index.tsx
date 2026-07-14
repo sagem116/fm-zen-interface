@@ -44,6 +44,7 @@ function Dashboard() {
     if (typeof window === "undefined") return true;
     return window.localStorage.getItem("dashboard.showTopScores") !== "0";
   });
+  const [customizeOpen, setCustomizeOpen] = useState(false);
   useEffect(() => setMounted(true), []);
 
   useEffect(() => {
