@@ -93,10 +93,12 @@
   --sidebar-ring: oklch(0.82 0.17 88);
 }
 
-.dark {
-  --background: oklch(0.16 0.03 250);
-  --foreground: oklch(0.96 0.01 90);
-}
+/* .dark is used as a wrapper on the shell but must NOT hardcode
+   --background / --foreground: doing so overrides the active
+   theme's tokens for every descendant and reverts custom themes
+   back to the midnight blue values. The active theme class on
+   <html> (theme-neon, theme-ember, theme-orange, ...) owns these
+   variables. */
 
 /* =========================================================
    Theme variants — applied via a class on <html>.
