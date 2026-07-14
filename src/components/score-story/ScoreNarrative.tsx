@@ -99,7 +99,7 @@ export function ScoreNarrative({
       title={resolvedTitle}
       icon={mode === "explain" ? <Sparkles className="size-4" /> : <BookOpen className="size-4" />}
       preview={preview}
-      storageKey={`fm.narrative.${ctx.kind}.${preset}.${mode}`}
+      storageKey={`fm.narrative.${ctx.identity.kind}.${preset}.${mode}`}
       defaultOpen={defaultOpen}
       tone={mode === "explain" ? "accent" : "default"}
     >
