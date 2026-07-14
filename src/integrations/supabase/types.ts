@@ -1142,6 +1142,9 @@ export type Database = {
         | "continental"
         | "player_stats"
         | "competitions"
+        | "coaches"
+        | "classifications"
+        | "transfers"
     }
     CompositeTypes: {
       [_ in never]: never
@@ -1275,6 +1278,9 @@ export const Constants = {
         "continental",
         "player_stats",
         "competitions",
+        "coaches",
+        "classifications",
+        "transfers",
       ],
     },
   },
