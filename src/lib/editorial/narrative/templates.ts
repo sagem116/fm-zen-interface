@@ -124,16 +124,17 @@ export const CONTEXT_BEST_CLUB: TemplateBlock = {
 
 export const CLOSING_ELITE: TemplateBlock = {
   variants: [
-    "Uma época que confirma o estatuto ganho nos últimos anos.",
-    "Mais uma temporada em que a exigência é honrada com resultados.",
-    "Um exercício que reforça o lugar de {name} entre a elite.",
+    "Fechar a época com este patamar é a parte mais fácil de descrever — o difícil é sustentar, ano após ano, o padrão que agora se lê com naturalidade.",
+    "Um exercício que reforça o lugar de {name} entre a elite não pela pontuação isolada, mas pela repetição do sinal.",
+    "Em síntese: o rendimento não é surpresa e é essa ausência de surpresa que hoje já é o argumento mais forte.",
   ],
 };
 
 export const CLOSING_NEUTRAL: TemplateBlock = {
   variants: [
-    "O futuro dirá se este é o início de um novo ciclo ou um pico de forma.",
-    "A próxima época confirmará ou não a solidez deste desempenho.",
+    "Ficará para a próxima época a resposta à pergunta que este exercício deixa aberta: consolidação ou pico?",
+    "O retrato atual permite duas leituras — otimista ou cautelosa — e a próxima temporada é que vai decidir qual delas prevalece.",
+    "É um momento intermédio, do género que só ganha significado com o passar do tempo. Convém ler com paciência.",
   ],
 };
 
