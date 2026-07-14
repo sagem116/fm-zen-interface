@@ -10,7 +10,7 @@ import {
   DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu";
 
-export type ThemeId = "midnight" | "graygold" | "orange" | "light";
+export type ThemeId = "midnight" | "graygold" | "orange" | "light" | "neon";
 
 export interface ThemeDef {
   id: ThemeId;
@@ -24,6 +24,7 @@ export const THEMES: ThemeDef[] = [
   { id: "midnight", label: "Midnight Gold", swatch: "#e6c44a", bg: "#0c1530", isDark: true },
   { id: "graygold", label: "Graphite Gold", swatch: "#e6c44a", bg: "#3a3a3d", isDark: true },
   { id: "orange", label: "Orange Night", swatch: "#ff8a3d", bg: "#161009", isDark: true },
+  { id: "neon", label: "Neon Intelligence", swatch: "#22d3ee", bg: "#05060f", isDark: true },
   { id: "light", label: "Light", swatch: "#caa14a", bg: "#fafaf6", isDark: false },
 ];
 
