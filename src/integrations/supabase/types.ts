@@ -14,20 +14,77 @@ export type Database = {
   }
   public: {
     Tables: {
+      club_reputation_season: {
+        Row: {
+          avg_attendance: number | null
+          club_id: string | null
+          club_name: string
+          created_at: string
+          id: string
+          reputation: number | null
+          season_id: string
+          season_ticket_holders: number | null
+          season_year: number
+          updated_at: string
+        }
+        Insert: {
+          avg_attendance?: number | null
+          club_id?: string | null
+          club_name: string
+          created_at?: string
+          id?: string
+          reputation?: number | null
+          season_id: string
+          season_ticket_holders?: number | null
+          season_year: number
+          updated_at?: string
+        }
+        Update: {
+          avg_attendance?: number | null
+          club_id?: string | null
+          club_name?: string
+          created_at?: string
+          id?: string
+          reputation?: number | null
+          season_id?: string
+          season_ticket_holders?: number | null
+          season_year?: number
+          updated_at?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "club_reputation_season_club_id_fkey"
+            columns: ["club_id"]
+            isOneToOne: false
+            referencedRelation: "clubs"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "club_reputation_season_season_id_fkey"
+            columns: ["season_id"]
+            isOneToOne: false
+            referencedRelation: "seasons"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
       clubs: {
         Row: {
+          continent: string | null
           country_id: string | null
           created_at: string
           id: string
           name: string
         }
         Insert: {
+          continent?: string | null
           country_id?: string | null
           created_at?: string
           id?: string
           name: string
         }
         Update: {
+          continent?: string | null
           country_id?: string | null
           created_at?: string
           id?: string
@@ -45,36 +102,63 @@ export type Database = {
       }
       coach_assignments: {
         Row: {
+          ca: number | null
           club_id: string | null
           club_name: string | null
+          club_role: string | null
           coach_id: string
           coach_name: string
+          country_name: string | null
+          cp: number | null
           created_at: string
           id: string
           info: string | null
+          intl_role: string | null
+          intl_salary: number | null
           module: Database["public"]["Enums"]["module_type"]
+          rc: number | null
+          rm: number | null
+          salary: number | null
           season_id: string
         }
         Insert: {
+          ca?: number | null
           club_id?: string | null
           club_name?: string | null
+          club_role?: string | null
           coach_id: string
           coach_name: string
+          country_name?: string | null
+          cp?: number | null
           created_at?: string
           id?: string
           info?: string | null
+          intl_role?: string | null
+          intl_salary?: number | null
           module: Database["public"]["Enums"]["module_type"]
+          rc?: number | null
+          rm?: number | null
+          salary?: number | null
           season_id: string
         }
         Update: {
+          ca?: number | null
           club_id?: string | null
           club_name?: string | null
+          club_role?: string | null
           coach_id?: string
           coach_name?: string
+          country_name?: string | null
+          cp?: number | null
           created_at?: string
           id?: string
           info?: string | null
+          intl_role?: string | null
+          intl_salary?: number | null
           module?: Database["public"]["Enums"]["module_type"]
+          rc?: number | null
+          rm?: number | null
+          salary?: number | null
           season_id?: string
         }
         Relationships: [
@@ -103,22 +187,193 @@ export type Database = {
       }
       coaches: {
         Row: {
+          age: number | null
+          attacking_formation: string | null
+          ca: number | null
+          cp: number | null
           created_at: string
+          defensive_formation: string | null
           id: string
+          idu: string | null
+          is_national_team: boolean | null
+          marking_type: string | null
+          mentality: string | null
           name: string
+          national_team: string | null
           nationality: string | null
+          personality: string | null
+          play_style: string | null
+          preferred_formation: string | null
+          press_relationship: string | null
+          pressing_type: string | null
+          rc: number | null
+          rm: number | null
+          secondary_formation: string | null
+          tactical_style: string | null
+          training_type: string | null
         }
         Insert: {
+          age?: number | null
+          attacking_formation?: string | null
+          ca?: number | null
+          cp?: number | null
           created_at?: string
+          defensive_formation?: string | null
           id?: string
+          idu?: string | null
+          is_national_team?: boolean | null
+          marking_type?: string | null
+          mentality?: string | null
           name: string
+          national_team?: string | null
           nationality?: string | null
+          personality?: string | null
+          play_style?: string | null
+          preferred_formation?: string | null
+          press_relationship?: string | null
+          pressing_type?: string | null
+          rc?: number | null
+          rm?: number | null
+          secondary_formation?: string | null
+          tactical_style?: string | null
+          training_type?: string | null
         }
         Update: {
+          age?: number | null
+          attacking_formation?: string | null
+          ca?: number | null
+          cp?: number | null
           created_at?: string
+          defensive_formation?: string | null
           id?: string
+          idu?: string | null
+          is_national_team?: boolean | null
+          marking_type?: string | null
+          mentality?: string | null
           name?: string
+          national_team?: string | null
           nationality?: string | null
+          personality?: string | null
+          play_style?: string | null
+          preferred_formation?: string | null
+          press_relationship?: string | null
+          pressing_type?: string | null
+          rc?: number | null
+          rm?: number | null
+          secondary_formation?: string | null
+          tactical_style?: string | null
+          training_type?: string | null
+        }
+        Relationships: []
+      }
+      competition_reputation: {
+        Row: {
+          competition: string
+          continent: string | null
+          country: string | null
+          id: string
+          reputation: number
+          season_year: number | null
+          updated_at: string
+        }
+        Insert: {
+          competition: string
+          continent?: string | null
+          country?: string | null
+          id?: string
+          reputation: number
+          season_year?: number | null
+          updated_at?: string
+        }
+        Update: {
+          competition?: string
+          continent?: string | null
+          country?: string | null
+          id?: string
+          reputation?: number
+          season_year?: number | null
+          updated_at?: string
+        }
+        Relationships: []
+      }
+      competition_stats: {
+        Row: {
+          age_avg: number | null
+          avg_rating_avg: number | null
+          ca_avg: number | null
+          comp_type: string
+          competition: string
+          continent: string | null
+          country: string | null
+          cp_avg: number | null
+          created_at: string
+          fouls_per90_avg: number | null
+          id: string
+          n_players: number | null
+          pass_pct_avg: number | null
+          ra_avg: number | null
+          rc_avg: number | null
+          reds_avg: number | null
+          rm_avg: number | null
+          salary_avg: number | null
+          season_year: number
+          shot_pct_avg: number | null
+          tackles_per90_avg: number | null
+          vp_avg: number | null
+          xg_avg: number | null
+          yellows_avg: number | null
+        }
+        Insert: {
+          age_avg?: number | null
+          avg_rating_avg?: number | null
+          ca_avg?: number | null
+          comp_type: string
+          competition: string
+          continent?: string | null
+          country?: string | null
+          cp_avg?: number | null
+          created_at?: string
+          fouls_per90_avg?: number | null
+          id?: string
+          n_players?: number | null
+          pass_pct_avg?: number | null
+          ra_avg?: number | null
+          rc_avg?: number | null
+          reds_avg?: number | null
+          rm_avg?: number | null
+          salary_avg?: number | null
+          season_year: number
+          shot_pct_avg?: number | null
+          tackles_per90_avg?: number | null
+          vp_avg?: number | null
+          xg_avg?: number | null
+          yellows_avg?: number | null
+        }
+        Update: {
+          age_avg?: number | null
+          avg_rating_avg?: number | null
+          ca_avg?: number | null
+          comp_type?: string
+          competition?: string
+          continent?: string | null
+          country?: string | null
+          cp_avg?: number | null
+          created_at?: string
+          fouls_per90_avg?: number | null
+          id?: string
+          n_players?: number | null
+          pass_pct_avg?: number | null
+          ra_avg?: number | null
+          rc_avg?: number | null
+          reds_avg?: number | null
+          rm_avg?: number | null
+          salary_avg?: number | null
+          season_year?: number
+          shot_pct_avg?: number | null
+          tackles_per90_avg?: number | null
+          vp_avg?: number | null
+          xg_avg?: number | null
+          yellows_avg?: number | null
         }
         Relationships: []
       }
@@ -382,6 +637,108 @@ export type Database = {
           },
         ]
       }
+      player_stats: {
+        Row: {
+          age: number | null
+          ast: number | null
+          avg_rating: number | null
+          ca: number | null
+          club: string | null
+          comp_type: string
+          competition: string
+          continent: string | null
+          country: string | null
+          cp: number | null
+          created_at: string
+          fouls_per90: number | null
+          games: number | null
+          gls: number | null
+          hdj: number | null
+          id: string
+          idu: string | null
+          nationality: string | null
+          pass_pct: number | null
+          player_name: string
+          ra: number | null
+          rc: number | null
+          reds: number | null
+          rm: number | null
+          salary: number | null
+          season_year: number
+          shot_pct: number | null
+          tackles_per90: number | null
+          vp: number | null
+          xg: number | null
+          yellows: number | null
+        }
+        Insert: {
+          age?: number | null
+          ast?: number | null
+          avg_rating?: number | null
+          ca?: number | null
+          club?: string | null
+          comp_type: string
+          competition: string
+          continent?: string | null
+          country?: string | null
+          cp?: number | null
+          created_at?: string
+          fouls_per90?: number | null
+          games?: number | null
+          gls?: number | null
+          hdj?: number | null
+          id?: string
+          idu?: string | null
+          nationality?: string | null
+          pass_pct?: number | null
+          player_name: string
+          ra?: number | null
+          rc?: number | null
+          reds?: number | null
+          rm?: number | null
+          salary?: number | null
+          season_year: number
+          shot_pct?: number | null
+          tackles_per90?: number | null
+          vp?: number | null
+          xg?: number | null
+          yellows?: number | null
+        }
+        Update: {
+          age?: number | null
+          ast?: number | null
+          avg_rating?: number | null
+          ca?: number | null
+          club?: string | null
+          comp_type?: string
+          competition?: string
+          continent?: string | null
+          country?: string | null
+          cp?: number | null
+          created_at?: string
+          fouls_per90?: number | null
+          games?: number | null
+          gls?: number | null
+          hdj?: number | null
+          id?: string
+          idu?: string | null
+          nationality?: string | null
+          pass_pct?: number | null
+          player_name?: string
+          ra?: number | null
+          rc?: number | null
+          reds?: number | null
+          rm?: number | null
+          salary?: number | null
+          season_year?: number
+          shot_pct?: number | null
+          tackles_per90?: number | null
+          vp?: number | null
+          xg?: number | null
+          yellows?: number | null
+        }
+        Relationships: []
+      }
       players: {
         Row: {
           age: number | null
@@ -484,6 +841,7 @@ export type Database = {
         Row: {
           club_id: string | null
           club_name: string
+          competition: string | null
           created_at: string
           division_label: string | null
           division_num: number | null
@@ -505,6 +863,7 @@ export type Database = {
         Insert: {
           club_id?: string | null
           club_name: string
+          competition?: string | null
           created_at?: string
           division_label?: string | null
           division_num?: number | null
@@ -526,6 +885,7 @@ export type Database = {
         Update: {
           club_id?: string | null
           club_name?: string
+          competition?: string | null
           created_at?: string
           division_label?: string | null
           division_num?: number | null
@@ -587,10 +947,16 @@ export type Database = {
       [_ in never]: never
     }
     Functions: {
-      [_ in never]: never
+      show_limit: { Args: never; Returns: number }
+      show_trgm: { Args: { "": string }; Returns: string[] }
     }
     Enums: {
-      module_type: "superleague" | "national" | "continental"
+      module_type:
+        | "superleague"
+        | "national"
+        | "continental"
+        | "player_stats"
+        | "competitions"
     }
     CompositeTypes: {
       [_ in never]: never
@@ -718,7 +1084,13 @@ export type CompositeTypes<
 export const Constants = {
   public: {
     Enums: {
-      module_type: ["superleague", "national", "continental"],
+      module_type: [
+        "superleague",
+        "national",
+        "continental",
+        "player_stats",
+        "competitions",
+      ],
     },
   },
 } as const
