@@ -336,23 +336,41 @@ function RankingsPage() {
             : d.continental.filter((r) => r.competition === contComp)
           : [];
     const continentalRows = baseContinental.filter((c) => passYear(c.season_year));
-    // For coaches: when filtering SuperLeague by division, only keep coaches assigned to clubs that played in that division that season.
+    // Club coaches are imported under module='superleague' in
+    // coach_assignments (it is the only module that carries a club_name;
+    // module='national' rows are seleção-nacional coaches with an empty
+    // club_name). The coach record's `module` therefore identifies the
+    // import origin, not the competition the points come from. For any
+    // module-specific view we keep every coach whose (season, club) matches
+    // the filtered standings/continental rows, and then remap the coach's
+    // module so computeRankings' `${year}|${module}|${club}` lookup
+    // resolves to the filtered clubSeasonPoints bucket.
+    const clubSeasonSet = new Set<string>();
+    for (const s of standingsRows) clubSeasonSet.add(`${s.season_year}|${s.club_name}`);
+    for (const c of continentalRows) {
+      if (c.team1) clubSeasonSet.add(`${c.season_year}|${c.team1}`);
+      if (c.team2) clubSeasonSet.add(`${c.season_year}|${c.team2}`);
+    }
     const allowedCoach = (c: (typeof d.coaches)[number]) => {
       if (!passYear(c.season_year)) return false;
+      if (!c.club_name) return false;
       if (moduleFilter === "all") return true;
-      if (c.module !== moduleFilter && !isContinental) return false;
-      if (moduleFilter === "superleague" && slDiv !== "all") {
-        return standingsRows.some(
-          (s) => s.season_year === c.season_year && s.club_name === c.club_name,
-        );
-      }
-      return true;
+      return clubSeasonSet.has(`${c.season_year}|${c.club_name}`);
     };
+    const targetModule: "superleague" | "national" | "continental" | null =
+      moduleFilter === "superleague" ||
+      moduleFilter === "national" ||
+      moduleFilter === "continental"
+        ? moduleFilter
+        : null;
+    const coachesForCompute = d.coaches.filter(allowedCoach).map((c) =>
+      targetModule ? { ...c, module: targetModule } : c,
+    );
     return computeRankings(
       {
         standings: standingsRows,
         continental: continentalRows,
-        coaches: d.coaches.filter(allowedCoach),
+        coaches: coachesForCompute,
         clubCountry: d.clubCountry,
       },
       data.config,
