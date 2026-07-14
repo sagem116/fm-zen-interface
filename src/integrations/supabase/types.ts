@@ -637,6 +637,95 @@ export type Database = {
           },
         ]
       }
+      player_profiles: {
+        Row: {
+          age: number | null
+          attributes: Json
+          ca: number | null
+          club: string | null
+          continent: string | null
+          country: string | null
+          cp: number | null
+          created_at: string
+          extras: Json
+          height: number | null
+          id: string
+          idu: string | null
+          nationality: string | null
+          personality: string | null
+          player_name: string
+          preferred_foot: string | null
+          primary_position: string | null
+          reputation: number | null
+          salary: number | null
+          season_id: string
+          season_year: number
+          secondary_positions: string | null
+          vp: number | null
+          weight: number | null
+        }
+        Insert: {
+          age?: number | null
+          attributes?: Json
+          ca?: number | null
+          club?: string | null
+          continent?: string | null
+          country?: string | null
+          cp?: number | null
+          created_at?: string
+          extras?: Json
+          height?: number | null
+          id?: string
+          idu?: string | null
+          nationality?: string | null
+          personality?: string | null
+          player_name: string
+          preferred_foot?: string | null
+          primary_position?: string | null
+          reputation?: number | null
+          salary?: number | null
+          season_id: string
+          season_year: number
+          secondary_positions?: string | null
+          vp?: number | null
+          weight?: number | null
+        }
+        Update: {
+          age?: number | null
+          attributes?: Json
+          ca?: number | null
+          club?: string | null
+          continent?: string | null
+          country?: string | null
+          cp?: number | null
+          created_at?: string
+          extras?: Json
+          height?: number | null
+          id?: string
+          idu?: string | null
+          nationality?: string | null
+          personality?: string | null
+          player_name?: string
+          preferred_foot?: string | null
+          primary_position?: string | null
+          reputation?: number | null
+          salary?: number | null
+          season_id?: string
+          season_year?: number
+          secondary_positions?: string | null
+          vp?: number | null
+          weight?: number | null
+        }
+        Relationships: [
+          {
+            foreignKeyName: "player_profiles_season_id_fkey"
+            columns: ["season_id"]
+            isOneToOne: false
+            referencedRelation: "seasons"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
       player_stats: {
         Row: {
           age: number | null
@@ -917,6 +1006,102 @@ export type Database = {
             columns: ["season_id"]
             isOneToOne: false
             referencedRelation: "seasons"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      transfers: {
+        Row: {
+          coach_id: string | null
+          created_at: string
+          from_club_id: string | null
+          from_club_name: string | null
+          from_club_name_key: string | null
+          id: string
+          person_name: string
+          person_name_key: string
+          person_type: string
+          player_id: string | null
+          season_id: string
+          season_year: number
+          to_club_id: string | null
+          to_club_name: string | null
+          to_club_name_key: string | null
+          transfer_date: string
+          value: number
+        }
+        Insert: {
+          coach_id?: string | null
+          created_at?: string
+          from_club_id?: string | null
+          from_club_name?: string | null
+          from_club_name_key?: string | null
+          id?: string
+          person_name: string
+          person_name_key: string
+          person_type?: string
+          player_id?: string | null
+          season_id: string
+          season_year: number
+          to_club_id?: string | null
+          to_club_name?: string | null
+          to_club_name_key?: string | null
+          transfer_date: string
+          value?: number
+        }
+        Update: {
+          coach_id?: string | null
+          created_at?: string
+          from_club_id?: string | null
+          from_club_name?: string | null
+          from_club_name_key?: string | null
+          id?: string
+          person_name?: string
+          person_name_key?: string
+          person_type?: string
+          player_id?: string | null
+          season_id?: string
+          season_year?: number
+          to_club_id?: string | null
+          to_club_name?: string | null
+          to_club_name_key?: string | null
+          transfer_date?: string
+          value?: number
+        }
+        Relationships: [
+          {
+            foreignKeyName: "transfers_coach_id_fkey"
+            columns: ["coach_id"]
+            isOneToOne: false
+            referencedRelation: "coaches"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "transfers_from_club_id_fkey"
+            columns: ["from_club_id"]
+            isOneToOne: false
+            referencedRelation: "clubs"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "transfers_player_id_fkey"
+            columns: ["player_id"]
+            isOneToOne: false
+            referencedRelation: "players"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "transfers_season_id_fkey"
+            columns: ["season_id"]
+            isOneToOne: false
+            referencedRelation: "seasons"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "transfers_to_club_id_fkey"
+            columns: ["to_club_id"]
+            isOneToOne: false
+            referencedRelation: "clubs"
             referencedColumns: ["id"]
           },
         ]
