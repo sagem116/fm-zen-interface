@@ -1,6 +1,6 @@
 import { createFileRoute, Link } from "@tanstack/react-router";
 import { useEffect, useMemo, useState } from "react";
-import { Loader2, Trophy, UploadCloud, Clock } from "lucide-react";
+import { Loader2, Trophy, UploadCloud, Clock, SlidersHorizontal } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { useDashboardData } from "@/lib/dashboard/useDashboardData";
 import { DashboardKPIs } from "@/components/dashboard/DashboardKPIs";
@@ -15,6 +15,9 @@ import { DashboardImports } from "@/components/dashboard/DashboardImports";
 import { DashboardQuickActions } from "@/components/dashboard/DashboardQuickActions";
 import { DashboardTopPerformersByScore } from "@/components/dashboard/DashboardTopPerformersByScore";
 import { DashboardNarrative } from "@/components/dashboard/DashboardNarrative";
+import { DashboardMarket } from "@/components/dashboard/DashboardMarket";
+import { DashboardCustomizeDialog } from "@/components/dashboard/DashboardCustomizeDialog";
+import { useDashboardLayout, type DashboardBlockDef } from "@/hooks/useDashboardLayout";
 
 export const Route = createFileRoute("/")({
   head: () => ({
