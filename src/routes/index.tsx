@@ -153,6 +153,95 @@ function Dashboard() {
   const { ranks } = derived;
   const years = ranks.years;
 
+  const BLOCKS: DashboardBlockDef[] = [
+    { id: "kpis", label: "Visão Geral · KPIs" },
+    { id: "summary", label: "Resumo da Época & Destaques" },
+    { id: "narrative", label: "Leitura Editorial" },
+    { id: "market", label: "Mercado" },
+    { id: "alerts", label: "Alertas" },
+    { id: "quick-rankings", label: "Rankings Rápidos" },
+    { id: "top-scores", label: "Top Performers by Score" },
+    { id: "evolution", label: "Evolução & Insights" },
+    { id: "smart-imports", label: "Smart Profiles & Imports" },
+    { id: "quick-actions", label: "Ações Rápidas" },
+  ];
+
+  const layout = useDashboardLayout(BLOCKS);
+
+  const blockContent: Record<string, React.ReactNode> = {
+    kpis: (
+      <DashboardKPIs
+        kpis={{
+          ...derived.kpis,
+          imports: imports.length,
+          insightsCount: insights.length,
+          activeProfileId: derived.kpis.activeProfileId ?? null,
+        }}
+      />
+    ),
+    summary: (
+      <div className="grid gap-4 xl:grid-cols-2">
+        <DashboardSeasonSummary insights={insights} />
+        <DashboardHighlights highlights={derived.highlights} />
+      </div>
+    ),
+    narrative: (
+      <DashboardNarrative
+        seasons={derived.kpis.seasons}
+        imports={imports.length}
+        insights={insights.length}
+        clubs={derived.kpis.clubs}
+        coaches={derived.kpis.coaches}
+        players={derived.kpis.players}
+        competitions={derived.kpis.competitions}
+        countries={derived.kpis.countries}
+        latestYear={derived.latestYear}
+        biggestRise={derived.highlights.biggestRise}
+        biggestFall={derived.highlights.biggestFall}
+        bestSeason={derived.highlights.bestSeason}
+        mostRegular={derived.highlights.mostRegular}
+        lastImport={
+          lastImport
+            ? { filename: lastImport.filename, module: lastImport.module, status: lastImport.status }
+            : null
+        }
+      />
+    ),
+    market: <DashboardMarket />,
+    alerts: <DashboardAlerts alerts={alertEntries} />,
+    "quick-rankings": (
+      <DashboardQuickRankings
+        clubs={ranks.clubs}
+        coaches={ranks.coaches}
+        countries={ranks.countries}
+        evolution={ranks.evolution}
+        years={years}
+        topPlayers={topPlayers}
+        topCompetitions={topCompetitions}
+      />
+    ),
+    "top-scores": showTopScores ? <DashboardTopPerformersByScore /> : null,
+    evolution: (
+      <div className="grid gap-4 xl:grid-cols-[2fr_1fr]">
+        <DashboardEvolution
+          clubs={ranks.clubs}
+          coaches={ranks.coaches}
+          countries={ranks.countries}
+          evolution={ranks.evolution}
+          years={years}
+        />
+        <DashboardInsightsFeed insights={insights} />
+      </div>
+    ),
+    "smart-imports": (
+      <div className="grid gap-4 xl:grid-cols-2">
+        <DashboardSmartProfiles smart={derived.smart} />
+        <DashboardImports imports={imports} />
+      </div>
+    ),
+    "quick-actions": <DashboardQuickActions />,
+  };
+
   return (
     <div className="space-y-6">
       <div className="grid grid-cols-[minmax(0,1fr)_auto] items-center gap-3 sm:flex sm:flex-wrap sm:items-end sm:justify-between">
@@ -177,6 +266,13 @@ function Dashboard() {
         >
           {showTopScores ? "Ocultar" : "Mostrar"} Top Performers by Score
         </Button>
+        <Button
+          variant="outline"
+          className="shrink-0"
+          onClick={() => setCustomizeOpen(true)}
+        >
+          <SlidersHorizontal className="size-4" /> Personalizar
+        </Button>
       </div>
 
       {lastImport && (
@@ -190,68 +286,24 @@ function Dashboard() {
         </div>
       )}
 
-      <DashboardKPIs
-        kpis={{
-          ...derived.kpis,
-          imports: imports.length,
-          insightsCount: insights.length,
-          activeProfileId: derived.kpis.activeProfileId ?? null,
-        }}
+      {layout.orderedIds.map((id) => {
+        if (layout.isHidden(id)) return null;
+        const node = blockContent[id];
+        if (!node) return null;
+        return <div key={id}>{node}</div>;
+      })}
+
+      <DashboardCustomizeDialog
+        open={customizeOpen}
+        onOpenChange={setCustomizeOpen}
+        blocks={BLOCKS}
+        orderedIds={layout.orderedIds}
+        isHidden={layout.isHidden}
+        toggleHidden={layout.toggleHidden}
+        move={layout.move}
+        reset={layout.reset}
       />
-
-      <div className="grid gap-4 xl:grid-cols-2">
-        <DashboardSeasonSummary insights={insights} />
-        <DashboardHighlights highlights={derived.highlights} />
-      </div>
-
-      <DashboardNarrative
-        seasons={derived.kpis.seasons}
-        imports={imports.length}
-        insights={insights.length}
-        clubs={derived.kpis.clubs}
-        coaches={derived.kpis.coaches}
-        players={derived.kpis.players}
-        competitions={derived.kpis.competitions}
-        countries={derived.kpis.countries}
-        latestYear={derived.latestYear}
-        biggestRise={derived.highlights.biggestRise}
-        biggestFall={derived.highlights.biggestFall}
-        bestSeason={derived.highlights.bestSeason}
-        mostRegular={derived.highlights.mostRegular}
-        lastImport={lastImport ? { filename: lastImport.filename, module: lastImport.module, status: lastImport.status } : null}
-      />
-
-      <DashboardAlerts alerts={alertEntries} />
-
-      <DashboardQuickRankings
-        clubs={ranks.clubs}
-        coaches={ranks.coaches}
-        countries={ranks.countries}
-        evolution={ranks.evolution}
-        years={years}
-        topPlayers={topPlayers}
-        topCompetitions={topCompetitions}
-      />
-
-      {showTopScores ? <DashboardTopPerformersByScore /> : null}
-
-      <div className="grid gap-4 xl:grid-cols-[2fr_1fr]">
-        <DashboardEvolution
-          clubs={ranks.clubs}
-          coaches={ranks.coaches}
-          countries={ranks.countries}
-          evolution={ranks.evolution}
-          years={years}
-        />
-        <DashboardInsightsFeed insights={insights} />
-      </div>
-
-      <div className="grid gap-4 xl:grid-cols-2">
-        <DashboardSmartProfiles smart={derived.smart} />
-        <DashboardImports imports={imports} />
-      </div>
-
-      <DashboardQuickActions />
     </div>
   );
 }
+
