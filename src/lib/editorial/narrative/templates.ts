@@ -24,33 +24,33 @@ export interface TemplateBlock {
 
 export const OPENING_STRONG: TemplateBlock = {
   variants: [
-    "Depois de uma época extraordinária, {name} consolida-se entre a elite mundial da posição.",
-    "A campanha realizada por {name} coloca-o naturalmente no topo do ranking da sua posição.",
-    "{name} atravessa um dos momentos mais brilhantes da sua carreira, refletido de forma clara neste ranking.",
+    "É difícil ler o atual momento de {name} sem o colocar entre a elite: o desempenho recente não é um episódio, é a extensão natural da forma como o resto da temporada foi conduzido.",
+    "Há épocas que se afirmam pela regularidade e outras pela intensidade. A de {name} conseguiu as duas coisas — e o ranking limita-se a traduzir o que já era evidente ao longo da temporada.",
+    "{name} está num daqueles ciclos raros em que tudo se alinha: contexto, forma e decisões técnicas caminham na mesma direção, e o desempenho reflete-o de forma inequívoca.",
   ],
 };
 
 export const OPENING_STABLE: TemplateBlock = {
   variants: [
-    "{name} continua a afirmar-se como uma das principais referências da posição.",
-    "A regularidade demonstrada por {name} volta a ter tradução direta no ranking desta época.",
-    "Época sólida de {name}, que mantém o estatuto ganho nos últimos anos.",
+    "A leitura mais interessante de {name} nesta época não está numa métrica isolada — está na ausência de quebras. É essa constância que mantém o estatuto competitivo.",
+    "{name} reforça a ideia de que estabilidade, em alta densidade competitiva, é uma forma silenciosa de excelência: sem exageros, mas sem cedências.",
+    "Época sem ruído para {name}, no melhor sentido possível: continua a produzir dentro da faixa de rendimento onde os melhores costumam permanecer.",
   ],
 };
 
 export const OPENING_DECLINE: TemplateBlock = {
   variants: [
-    "Apesar da qualidade demonstrada, {name} perdeu algumas posições face à época anterior devido à forte concorrência.",
-    "{name} cede terreno no ranking desta época, ainda que mantenha um patamar de referência.",
-    "Época menos conseguida de {name}, que se afasta ligeiramente dos lugares cimeiros.",
+    "É legítimo dizer que {name} perde alguma tração nesta época — mas seria injusto ler o momento fora do contexto: a concorrência subiu antes de o seu registo baixar.",
+    "A época obriga a moderar o tom em torno de {name}. Não deixou de ser competitivo, mas o teto do próprio ranking subiu mais depressa do que o seu.",
+    "O ciclo atual de {name} exige leitura mais fina: o patamar continua acima da média, mas a distância para o topo cresceu por comparação, não por queda absoluta.",
   ],
 };
 
 export const POSITIONING: TemplateBlock = {
   variants: [
-    "Ocupa atualmente o {rank}.º lugar de {total}, pertencendo ao percentil {percentile} das entidades avaliadas.",
-    "Aparece no {rank}.º lugar entre {total}, no percentil {percentile}, com a classificação {grade}.",
-    "Encontra-se em {rank}.º lugar num universo de {total} avaliações, dentro do percentil {percentile}.",
+    "Neste universo de {total} avaliações, o {rank}.º lugar coloca-o dentro do percentil {percentile} — sinal de que a leitura competitiva se faz já num plano mais restrito do que o comum.",
+    "Um {rank}.º lugar entre {total} avaliações não é apenas uma posição numérica: representa o percentil {percentile}, aquele patamar em que qualquer variação passa a exigir contexto para ser interpretada.",
+    "A posição atual — {rank}.º entre {total} — situa-o no percentil {percentile}, uma zona onde as diferenças entre entidades deixam de ser explicadas por acaso.",
   ],
 };
 
@@ -65,24 +65,25 @@ export const DRIVERS: TemplateBlock = {
 
 export const EVOLUTION_UP: TemplateBlock = {
   variants: [
-    "A evolução registada face a {prevSeason} coloca-o entre as maiores revelações da temporada.",
-    "Subiu {deltaRank} posições relativamente à época anterior, uma das progressões mais expressivas do ranking.",
-    "A consistência demonstrada permitiu-lhe subir várias posições relativamente à época passada.",
+    "A distância percorrida face a {prevSeason} não se explica por um único acontecimento: foi a acumulação de pequenos ganhos que empurrou a leitura para outro patamar.",
+    "A subida face à época passada não é acidental — é o tipo de progressão que só acontece quando o desempenho passa a ser lido de forma diferente pelos adversários e pelo próprio contexto competitivo.",
+    "Quando uma temporada devolve este tipo de salto, quase nunca é por sorte. A evolução face a {prevSeason} sugere uma reorganização real do rendimento, não um pico isolado.",
   ],
 };
 
 export const EVOLUTION_DOWN: TemplateBlock = {
   variants: [
-    "Cedeu {deltaRank} posições face à época anterior, sinal da exigência crescente da categoria.",
-    "Perde alguma tração face à temporada anterior, num ranking cada vez mais competitivo.",
-    "A época encerra abaixo do patamar da anterior, apesar de manter valores muito assinaláveis.",
+    "O recuo face a {prevSeason} tem menos a ver com uma quebra do que com o ritmo dos outros: o ranking subiu de nível, e isso pesa mesmo em quem mantém padrão.",
+    "A leitura da queda exige contexto: {name} não deixou de produzir — a comparação é que se tornou mais dura, num ranking que continua a apertar critérios.",
+    "Uma quebra na posição raramente conta a história completa. Aqui, o patamar continua respeitável; o que mudou foi o teto competitivo em redor.",
   ],
 };
 
 export const EVOLUTION_FLAT: TemplateBlock = {
   variants: [
-    "Mantém uma posição em linha com a época anterior, prova da sua regularidade.",
-    "A época termina numa cadência semelhante à anterior, sem grandes oscilações.",
+    "A ausência de movimento face à época passada é, por si só, uma leitura: mantém-se estável num universo que raramente se estabiliza.",
+    "Em rankings desta natureza, repetir posição costuma ser mais difícil do que subir. A época devolve exatamente esse tipo de continuidade.",
+    "O registo mantém-se dentro da mesma faixa da época anterior, o que num contexto competitivo tão volátil funciona quase como um sinal de solidez.",
   ],
 };
 
