@@ -1,118 +1,98 @@
-# Score Studio v2 — Wizard, Categorias e Formato Canónico
+# Plano — Evolução Perfis, Pesquisa e Dashboard
 
-Divido em duas fases independentes. Podes aprovar as duas ou só uma.
-
----
-
-## Fase A — Formato Canónico (Human / AI Friendly)
-
-Objetivo: permitir partilha e criação de Scores por humanos e por IA, sem tocar no Score Engine. Toda a lógica vive numa nova camada `src/lib/scores/canonical/`.
-
-### A1. Definir o formato
-
-Novo módulo `src/lib/scores/canonical/types.ts`:
-
-```ts
-CanonicalScore {
-  name, entity: "player"|"club"|"coach"|"competition"|"country",
-  category?, description?,
-  attributes?: { name, weight }[],
-  metrics?:    { name, weight }[],
-  contexts?:   { name, weight }[],
-  modifiers?:  { name, weight }[],
-}
-```
-
-Weights em qualquer escala (são normalizados na conversão).
-
-### A2. Camada de normalização (resolver)
-
-`src/lib/scores/canonical/resolver.ts` — reaproveita `normalizeDictionaryToken` de `src/lib/dictionary/resolver.ts` e os índices de `src/lib/dictionary/registry.ts`. Para cada nome:
-
-- match exato por alias → resolvido
-- fuzzy (Levenshtein/Jaro) com threshold → sugestão
-- múltiplos matches → ambíguo
-- nenhum → não encontrado
-
-Devolve `ResolutionReport` com listas `resolved / ambiguous / unknown` + sugestão top-1.
-
-### A3. Conversores
-
-`src/lib/scores/canonical/toInternal.ts` — Canónico → `ScoreDefinition`
-`src/lib/scores/canonical/fromInternal.ts` — `ScoreDefinition` → Canónico (usa `dictionaryEntry.name` como nome legível)
-
-Ambos com testes em `src/lib/scores/canonical/__tests__/`.
-
-### A4. UI — Import/Export no Score Studio
-
-Adicionar em `src/components/scores-studio/`:
-
-- `CanonicalImportDialog.tsx`
-  - textarea JSON + upload de ficheiro
-  - preview com badges: ✓ reconhecido · ⚠ ambíguo · ❌ não encontrado
-  - para cada ambíguo/desconhecido, dropdown com top-3 sugestões
-  - botão "Importar" fica ativo só quando não há erros
-- `CanonicalExportDialog.tsx`
-  - dois botões: **Exportar Interno** (compat) / **Exportar Human/AI** (recomendado)
-  - copy-to-clipboard + download `.json`
-
-Integrar via botões no header do `ScoreStudio` existente.
-
-### A5. Documentação in-app
-
-Nova aba/painel "Formato Canónico" dentro do Score Studio com:
-- explicação curta
-- 5 exemplos prontos (jogador, clube, treinador, competição, país) em `src/lib/scores/canonical/examples/`
-- botão "Copiar exemplo"
+Três áreas independentes. Todas reutilizam dados e componentes existentes. Nenhum cálculo é alterado.
 
 ---
 
-## Fase B — Wizard + Categorias + Preview
+## 1. Perfil de Treinadores — Balanço de Transferências
 
-Objetivo: reduzir a barreira de entrada mantendo o editor avançado atual como "modo pro".
+**Objetivo:** replicar no perfil do treinador a secção de mercado que já existe no perfil dos clubes.
 
-### B1. Wizard
+**Fonte de dados:** tabela `transfers` (já existe) — filtrando pelo treinador em vez do clube. Assumimos ligação via `coach_assignments` (treinador × clube × época) para atribuir cada transferência ao treinador em funções nessa época.
 
-Novo componente `src/components/scores-studio/wizard/ScoreWizard.tsx` com passos:
+**O que será mostrado:**
+- KPIs: total gasto, total recebido, balanço líquido, nº contratações, nº vendas.
+- Gráfico de evolução por época (barras receita/despesa + linha balanço).
+- Tabela top compras / top vendas.
+- Indicador de tendência (últimas 3 épocas vs anteriores).
+- Narrativa editorial curta ("perfil comprador/vendedor/equilibrado", baseada apenas nos rácios).
 
-1. **Entidade** — jogador/clube/treinador/competição/país
-2. **Template** — lista de presets oficiais (usa `defaultScoreDefinitions` como base) ou "começar do zero"
-3. **Categoria & nome** — Ataque, Defesa, Financeiro, Reputação, Histórico…
-4. **Atributos** — pesquisa inteligente com agrupamento por subcategoria (`DictionarySubcategory`); toggle + slider de peso
-5. **Métricas** — igual, agrupadas por subcategoria (passing, shooting, defending, …)
-6. **Preview** — top-20 do ranking calculado em tempo real + histograma de distribuição
-7. **Guardar** — cria `ScoreDefinition` e abre no editor avançado
+**Reutilização:**
+- Componente `ClubTransfersSection` (ou equivalente já existente no perfil do clube) — extrair a UI para um componente genérico `TransfersBalanceSection` que aceita a origem dos dados.
+- Motor narrativo existente (`src/lib/editorial/engines`) — adicionar template `coach_market_policy`.
 
-Estado local do wizard; só commita ao guardar.
-
-### B2. Pesquisa inteligente
-
-`src/components/scores-studio/wizard/SmartPicker.tsx`:
-- input com fuzzy search sobre `name / aliases / abbreviation`
-- filtros por `category` e `subcategory`
-- badges visuais por categoria
-
-### B3. Preview em tempo real
-
-Reaproveita `evaluateScore` do Engine + a amostra atual carregada. Debounce 200ms.
-Componentes: `WizardRankingPreview.tsx`, `WizardDistributionChart.tsx` (recharts, já no projeto).
-
-### B4. Entry point
-
-Botão **"Criar Score (Wizard)"** ao lado do atual "Novo" no header do `ScoreStudio`. O editor avançado atual fica intacto — o wizard é uma porta alternativa.
+**Ficheiros:**
+- Novo: `src/components/profile/tabs/CoachTransfersSection.tsx` (wrapper) ou reutilizar diretamente.
+- Novo: `src/lib/coach-transfers.ts` (agregação por treinador).
+- Editar: registry de tabs do perfil de treinador.
 
 ---
 
-## Compatibilidade / não-mexer
+## 2. Pesquisa Global — Sticky + Command Palette Inteligente
 
-- Score Engine, fórmulas, rankings, resultados, DB e estrutura interna: **inalterados**
-- `ScoreDefinition`, `defaultScoreDefinitions`, `useRecruitmentScoreDefinitions`: inalterados
-- Toda a nova lógica isolada em `src/lib/scores/canonical/` e `src/components/scores-studio/wizard/`
+**Objetivo:** transformar `GlobalSearch` numa pesquisa persistente, tolerante e agrupada.
+
+**Comportamento:**
+- **Sticky:** mover para dentro do `AppShell` header com `position: sticky; top: 0`, sempre visível durante scroll. Atalho `⌘K` / `Ctrl+K` continua a abrir o painel completo.
+- **Command palette:** painel modal com secções agrupadas — Jogadores, Clubes, Treinadores, Competições, Países, Continentes.
+- **Tolerância:** normalização de acentos (`String.normalize("NFD")`), lowercase, fuzzy matching (usar `fuse.js` — já disponível ou instalar), suporte a aliases se existirem em `player_profiles`/`clubs`.
+- **Resultados relacionados:** para um jogador, mostrar também o clube atual e país; para um clube, treinador atual e país; etc. Ligar via joins existentes.
+- **Atalhos:**
+  - Pesquisas recentes (localStorage, max 8).
+  - Entidades visitadas recentemente (já existe histórico em `useRecruitmentSourceData` — reaproveitar padrão).
+  - Favoritos se a infra existir; caso contrário, deixar seção vazia (não criar do zero).
+
+**Ficheiros:**
+- Editar: `src/components/GlobalSearch.tsx` — reescrever como command palette (usar `cmdk` via shadcn `Command` que já está no projeto).
+- Editar: `src/components/AppShell.tsx` — barra sticky no topo.
+- Novo: `src/lib/global-search/index.ts` — indexação em memória + fuzzy.
+- Novo: `src/lib/global-search/recent.ts` — localStorage helper.
 
 ---
 
-## Sugestão de ordem
+## 3. Dashboard — Centro de Inteligência
 
-Começaria por **Fase A** (menor superfície, valor imediato para partilha e prompts de IA) e depois **Fase B**. Ambas em turnos separados para manteres o preview verificável.
+**Objetivo:** reorganizar e enriquecer, sem tocar em cálculos.
 
-**Aprovas as duas fases, só a A, ou só a B?**
+**Nova estrutura em blocos:**
+1. **Visão Geral** — KPIs de universo (jogadores, clubes, treinadores, competições, países, continentes) + histórico (épocas, primeiro/último ano, cobertura).
+2. **Atividade Recente** — últimos imports, resumo da época, alertas.
+3. **Evolução Histórica** — gráficos de tendência (nº jogadores, nº clubes, valor de mercado, transferências, rankings, scores) por época.
+4. **Inteligência** — insights automáticos (existente `insights` engine) agrupados: ascensão, declínio, dominância, recordes.
+5. **Destaques** — melhor jogador/clube/treinador/país, top scores, novos líderes, maiores compras/vendas.
+
+**Novos cartões (todos derivados de dados existentes):**
+- `DashboardUniverse` — KPIs de universo + histórico.
+- `DashboardMarket` — totais de transferências, top compras/vendas.
+- `DashboardTopEntities` — melhor entidade por categoria.
+- `DashboardTrends` — sparklines/mini-charts de evolução.
+- `DashboardMovers` — maiores subidas/descidas recentes (já parcialmente em `biggestRise/Fall`).
+
+**Personalização:**
+- Cada bloco envolvido em wrapper com `visible` + `order` guardado em localStorage (`dashboard-layout-v1`).
+- Diálogo "Personalizar Dashboard" (reaproveitar padrão de `SidebarCustomizeDialog`) — reordenar via drag ou setas, toggle visibilidade.
+
+**Ficheiros:**
+- Novo: `src/components/dashboard/DashboardUniverse.tsx`, `DashboardMarket.tsx`, `DashboardTopEntities.tsx`, `DashboardTrends.tsx`, `DashboardMovers.tsx`, `DashboardCustomizeDialog.tsx`.
+- Novo: `src/hooks/useDashboardLayout.ts`.
+- Editar: `src/routes/index.tsx` — nova composição por blocos.
+
+---
+
+## Detalhes Técnicos
+
+- Todas as narrativas usam `src/lib/editorial/engines` — apenas novos templates, sem inventar dados.
+- Persistência local via `localStorage` (pesquisas recentes, layout do Dashboard).
+- Fuzzy: usar `cmdk`+ normalização manual; adicionar `fuse.js` só se `cmdk` sozinho não chegar.
+- Sem migrações de base de dados — tudo assenta em tabelas existentes.
+- Cada área é entregue de forma incremental; podemos validar a Área 1 antes de avançar para as seguintes se preferires.
+
+---
+
+## Ordem de Execução Sugerida
+
+1. **Perfil Treinador — Transferências** (menor risco, valor imediato).
+2. **Pesquisa Global** (impacto UX transversal).
+3. **Dashboard** (maior scope, beneficia da nova pesquisa).
+
+Confirma se avanço nesta ordem, ou se preferes outra prioridade / entregar apenas uma das áreas primeiro.
