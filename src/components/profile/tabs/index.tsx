@@ -78,6 +78,22 @@ registerProfileTab({
   order: 600,
   kinds: [...ALL_KINDS],
   render: (ctx) => <CompareTab ctx={ctx} />,
+registerProfileTab({
+  id: "coach-identity",
+  label: "Identidade",
+  icon: Fingerprint,
+  order: 250,
+  kinds: ["coach"],
+  render: (ctx) => <CoachIdentityTab ctx={ctx} />,
+});
+
+registerProfileTab({
+  id: "coach-tactical-identity",
+  label: "Identidade Tática",
+  icon: Target,
+  order: 260,
+  kinds: ["coach"],
+  render: (ctx) => <CoachTacticalIdentityTab ctx={ctx} />,
 });
 
 export {};
