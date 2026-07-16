@@ -98,7 +98,7 @@ function PremiosPage() {
   }, [ds, currentSeason]);
 
   return (
-    <AppShell title="Prémios">
+    <AppShell>
       <div className="space-y-4">
         <div className="flex items-center justify-between gap-3 flex-wrap">
           <div>
