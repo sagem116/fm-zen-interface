@@ -99,17 +99,27 @@ function parseNumericPart(text: string, allowDecimal: boolean): number {
 }
 
 // Parses transfer values as exported by Football Manager, in Portuguese and English,
-// including thousand separators, mixed suffixes ("500 mil", "€2.5M", "1.500.000") and ranges.
+// including thousand separators, mixed suffixes ("500 mil", "€2.5M", "1.500.000"),
+// full-word suffixes ("15 Million"), and free/loan/undisclosed markers.
+// Returns 0 for anything that isn't a positive monetary amount.
 export function parseValue(raw: unknown): number {
   if (raw == null || raw === "") return 0;
   if (typeof raw === "number") return Number.isFinite(raw) ? raw : 0;
   let text = String(raw).trim();
   if (!text) return 0;
 
-  const low = text.toLowerCase().replace(/[.]/g, "");
-  if (/^(livre|free|n\/?a|nd|desconhecido|unknown|--|-)$/.test(low)) return 0;
+  // Explicit "no monetary value" markers — must be checked BEFORE stripping
+  // currency symbols so "€ -" / "N/A" also match.
+  const marker = text.toLowerCase().replace(/[.]/g, "").trim();
+  if (
+    /^(livre|free|gratis|grátis|n\/?a|nd|nada|desconhecido|unknown|undisclosed|nao divulgado|não divulgado|confidencial|loan|emprestimo|empréstimo|--|-|—|–)$/.test(
+      marker,
+    )
+  ) {
+    return 0;
+  }
 
-  // Strip currency symbols and stray whitespace groups; keep separators intact.
+  // Strip currency symbols and non-breaking spaces; keep separators intact.
   text = text.replace(/[€$£¥\u00A0]/g, "").trim();
   if (!text) return 0;
 
@@ -123,10 +133,16 @@ export function parseValue(raw: unknown): number {
     if (a > 0) return a;
   }
 
-  // Number followed by optional word suffix (PT/EN).
-  const m = text.match(
-    /^(-?[\d.,\s]+?)\s*(k|mil|mi|m|mm|milhoes|milhões|milhao|milhão|mn|bn|b|bi|bili|bilioes|biliões|bilhoes|bilhões)?\.?$/i,
+  // Recognized suffixes (short + full words). Order longest-first so
+  // "million" is preferred over the substring "m".
+  const SUFFIX_RE =
+    /(thousand|thousands|million|millions|billion|billions|milhoes|milhões|milhao|milhão|bilhoes|bilhões|bilioes|biliões|mil|mm|mn|bn|bi|bili|k|m|b)/i;
+  const fullPattern = new RegExp(
+    `^(-?[\\d.,\\s]+?)\\s*(${SUFFIX_RE.source})?\\.?$`,
+    "i",
   );
+
+  const m = text.match(fullPattern);
   if (!m) {
     const stripped = text.replace(/[^\d.,-]/g, "");
     if (!stripped) return 0;
@@ -137,13 +153,20 @@ export function parseValue(raw: unknown): number {
   const suffix = (m[2] ?? "").toLowerCase();
   let multiplier = 1;
   if (suffix) {
-    if (/^(k|mil)$/.test(suffix)) multiplier = 1_000;
-    else if (/^(m|mi|mn|mm|milhao|milhão|milhoes|milhões)$/.test(suffix)) multiplier = 1_000_000;
-    else if (/^(b|bn|bi|bili|bilioes|biliões|bilhoes|bilhões)$/.test(suffix))
+    if (/^(k|mil|thousand|thousands)$/.test(suffix)) multiplier = 1_000;
+    else if (
+      /^(m|mm|mn|million|millions|milhao|milhão|milhoes|milhões)$/.test(suffix)
+    )
+      multiplier = 1_000_000;
+    else if (
+      /^(b|bn|bi|bili|billion|billions|bilioes|biliões|bilhoes|bilhões)$/.test(
+        suffix,
+      )
+    )
       multiplier = 1_000_000_000;
   }
   const value = parseNumericPart(numPart, multiplier > 1);
-  if (!Number.isFinite(value)) return 0;
+  if (!Number.isFinite(value) || value < 0) return 0;
   return Math.round(value * multiplier);
 }
 
