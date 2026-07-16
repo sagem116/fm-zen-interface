@@ -93,6 +93,7 @@ async function fetchAllMembership(): Promise<{
   international: RawInternational[];
   coaches: RawCoachAssign[];
   transfers: RawTransfer[];
+  clubCountryByName: Map<string, string>; // normKey(club) → country name
 }> {
   const [
     { data: seasonsRows },
@@ -101,6 +102,8 @@ async function fetchAllMembership(): Promise<{
     { data: internationalRaw },
     { data: coachesRaw },
     { data: transfersRaw },
+    { data: countriesRaw },
+    { data: clubsRaw },
   ] = (await Promise.all([
     supabase.from("seasons").select("id, year"),
     supabase
@@ -115,6 +118,8 @@ async function fetchAllMembership(): Promise<{
       .from("transfers")
       .select("season_year, person_name, from_club_name, to_club_name, value, person_type")
       .eq("person_type", "player"),
+    supabase.from("countries").select("id, name"),
+    supabase.from("clubs").select("name, country_id"),
   ])) as unknown as [
     { data: Array<{ id: string; year: number }> | null },
     {
@@ -158,16 +163,27 @@ async function fetchAllMembership(): Promise<{
       }> | null;
     },
     { data: Array<RawTransfer & { person_type: string }> | null },
+    { data: Array<{ id: string; name: string }> | null },
+    { data: Array<{ name: string; country_id: string | null }> | null },
   ];
   const yearById = new Map<string, number>();
   for (const s of seasonsRows ?? []) yearById.set(s.id, s.year);
   const yearOf = (id: string) => yearById.get(id) ?? 0;
+  const countryNameById = new Map<string, string>();
+  for (const c of countriesRaw ?? []) countryNameById.set(c.id, c.name);
+  const clubCountryByName = new Map<string, string>();
+  for (const c of clubsRaw ?? []) {
+    if (!c.name) continue;
+    const country = c.country_id ? countryNameById.get(c.country_id) : null;
+    if (country) clubCountryByName.set(normKey(c.name), country);
+  }
   return {
     standings: (standingsRaw ?? []).map((r) => ({ ...r, season_year: yearOf(r.season_id) })),
     continental: (continentalRaw ?? []).map((r) => ({ ...r, season_year: yearOf(r.season_id) })),
     international: (internationalRaw ?? []).map((r) => ({ ...r, season_year: yearOf(r.season_id) })),
     coaches: (coachesRaw ?? []).map((r) => ({ ...r, season_year: yearOf(r.season_id) })),
     transfers: transfersRaw ?? [],
+    clubCountryByName,
   };
 }
 
@@ -241,13 +257,22 @@ function buildClubCatalog(all: Awaited<ReturnType<typeof fetchAllMembership>>) {
       module: prev?.module ?? s.module,
     });
   }
-  // Country via coach_assignments
+  // Country: only from clubs → countries. coach_assignments.country_name in
+  // this project holds numeric FM IDs (e.g. "1", "12", "-") and must NOT be
+  // used as a display name — see Bug 1.
+  for (const [key, entry] of map.entries()) {
+    if (entry.country) continue;
+    const club = key.split("::")[0];
+    const country = all.clubCountryByName.get(club);
+    if (country) entry.country = country;
+  }
+  // Also seed clubs that appear in coach_assignments but not standings.
   for (const c of all.coaches) {
     if (!c.club_name || !c.season_year) continue;
     const key = seasonClubKey(c.club_name, c.season_year);
-    const prev = map.get(key) ?? { country: null, competition: null, division_num: null, module: c.module };
-    if (!prev.country && c.country_name) prev.country = c.country_name;
-    map.set(key, prev);
+    if (map.has(key)) continue;
+    const country = all.clubCountryByName.get(normKey(c.club_name)) ?? null;
+    map.set(key, { country, competition: null, division_num: null, module: c.module });
   }
   return map;
 }
