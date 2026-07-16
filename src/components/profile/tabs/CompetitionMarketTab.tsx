@@ -12,6 +12,8 @@ import {
   Target,
   Sparkles,
   Repeat,
+  Compass,
+  Lightbulb,
 } from "lucide-react";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Tabs, TabsList, TabsTrigger, TabsContent } from "@/components/ui/tabs";
@@ -47,6 +49,12 @@ import {
   computeInternalExternal,
   type Bucket,
 } from "@/lib/competition-market/profile";
+import {
+  computeIdentity,
+  computeIntelligence,
+  type IdentityClassification,
+  type IntelligenceTag,
+} from "@/lib/competition-market/identity";
 
 const fmtInt = (n: number) => (Number.isFinite(n) ? Math.round(n).toLocaleString("pt-PT") : "—");
 const fmtNum = (n: number, d = 1) => (Number.isFinite(n) ? n.toFixed(d) : "—");
@@ -178,6 +186,71 @@ function BucketTable({ rows, showAvg = true }: { rows: Bucket[]; showAvg?: boole
   );
 }
 
+function IdentityCard({ c }: { c: IdentityClassification }) {
+  const tone = c.score >= 50 ? "text-emerald-500" : c.score >= 25 ? "text-amber-500" : "text-muted-foreground";
+  return (
+    <Card>
+      <CardHeader className="pb-2">
+        <div className="flex items-center justify-between">
+          <CardTitle className="text-sm">{c.label}</CardTitle>
+          <Badge variant="outline" className={tone}>{c.level}</Badge>
+        </div>
+      </CardHeader>
+      <CardContent className="space-y-2">
+        <div className="flex items-center gap-2">
+          <Progress value={c.score} className="h-2 flex-1" />
+          <span className={`text-xs tabular-nums ${tone}`}>{c.score.toFixed(0)}</span>
+        </div>
+        <p className="text-xs text-muted-foreground">{c.explanation}</p>
+        <ul className="text-[11px] text-muted-foreground space-y-0.5">
+          {c.reasons.map((r) => (
+            <li key={r.metric} className="flex justify-between gap-2">
+              <span className="truncate">{r.metric}</span>
+              <span className="tabular-nums">{r.value}</span>
+            </li>
+          ))}
+        </ul>
+        {c.byYear.length > 1 && (
+          <div className="h-16 -mx-1">
+            <ResponsiveContainer width="100%" height="100%">
+              <LineChart data={c.byYear}>
+                <XAxis dataKey="season_year" tick={{ fontSize: 9 }} hide />
+                <YAxis hide domain={[0, 100]} />
+                <Tooltip formatter={(v: number) => v.toFixed(0)} labelFormatter={(y) => `Época ${y}`} />
+                <Line type="monotone" dataKey="score" stroke="hsl(var(--primary))" dot={false} />
+              </LineChart>
+            </ResponsiveContainer>
+          </div>
+        )}
+      </CardContent>
+    </Card>
+  );
+}
+
+function IntelligenceCard({ tag }: { tag: IntelligenceTag }) {
+  return (
+    <Card>
+      <CardContent className="pt-4 space-y-2">
+        <div className="flex items-start gap-2">
+          <Lightbulb className="h-3.5 w-3.5 mt-0.5 text-primary" />
+          <div className="flex-1">
+            <p className="text-sm font-medium">{tag.label}</p>
+            <p className="text-xs text-muted-foreground">{tag.reason}</p>
+          </div>
+        </div>
+        <ul className="text-[11px] text-muted-foreground space-y-0.5 pl-5">
+          {tag.sources.map((s) => (
+            <li key={s.metric} className="flex justify-between gap-2">
+              <span className="truncate">{s.metric}</span>
+              <span className="tabular-nums">{s.value}</span>
+            </li>
+          ))}
+        </ul>
+      </CardContent>
+    </Card>
+  );
+}
+
 export function CompetitionMarketTab({ ctx }: { ctx: ProfileContext }) {
   const { data: m, isLoading } = useCompetitionMarket(ctx.name);
   const flow = useMemo(() => (m ? computeFlow(m) : null), [m]);
@@ -189,6 +262,8 @@ export function CompetitionMarketTab({ ctx }: { ctx: ProfileContext }) {
   const pos = useMemo(() => (m ? computePositionalProfile(m) : null), [m]);
   const perso = useMemo(() => (m ? computePersonalProfile(m) : null), [m]);
   const inout = useMemo(() => (m ? computeInternalExternal(m) : null), [m]);
+  const identity = useMemo(() => (m ? computeIdentity(m) : []), [m]);
+  const intel = useMemo(() => (m ? computeIntelligence(m) : []), [m]);
 
   if (isLoading) {
     return (
@@ -581,6 +656,39 @@ export function CompetitionMarketTab({ ctx }: { ctx: ProfileContext }) {
               </CardContent>
             </Card>
           )}
+        </section>
+      )}
+
+      {/* Section 1 — Identidade */}
+      {identity.length > 0 && (
+        <section>
+          <h3 className="text-lg font-semibold mb-3 flex items-center gap-2">
+            <Compass className="h-4 w-4" /> Identidade de mercado
+          </h3>
+          <div className="grid gap-3 sm:grid-cols-2 lg:grid-cols-3">
+            {identity.map((c) => (
+              <IdentityCard key={c.key} c={c} />
+            ))}
+          </div>
+        </section>
+      )}
+
+      {/* Section 16 — Inteligência */}
+      {intel.length > 0 && (
+        <section>
+          <h3 className="text-lg font-semibold mb-3 flex items-center gap-2">
+            <Lightbulb className="h-4 w-4" /> Inteligência de mercado
+          </h3>
+          <div className="grid gap-3 md:grid-cols-2">
+            {intel.filter((tag) => tag.active).map((tag) => (
+              <IntelligenceCard key={tag.key} tag={tag} />
+            ))}
+            {intel.filter((tag) => tag.active).length === 0 && (
+              <p className="text-xs text-muted-foreground">
+                Nenhuma leitura suficientemente forte para produzir uma conclusão.
+              </p>
+            )}
+          </div>
         </section>
       )}
     </div>
