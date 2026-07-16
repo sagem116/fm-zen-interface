@@ -17,6 +17,7 @@ import { Route as RecruitmentCenterRouteImport } from './routes/recruitment-cent
 import { Route as RankingsPersonalizadosRouteImport } from './routes/rankings-personalizados'
 import { Route as RankingsRouteImport } from './routes/rankings'
 import { Route as RankingHistoricoRouteImport } from './routes/ranking-historico'
+import { Route as PremiosRouteImport } from './routes/premios'
 import { Route as PaisesRouteImport } from './routes/paises'
 import { Route as MinhaCarreiraRouteImport } from './routes/minha-carreira'
 import { Route as IntelligenceStudioRouteImport } from './routes/intelligence-studio'
@@ -120,6 +121,11 @@ const RankingsRoute = RankingsRouteImport.update({
 const RankingHistoricoRoute = RankingHistoricoRouteImport.update({
   id: '/ranking-historico',
   path: '/ranking-historico',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const PremiosRoute = PremiosRouteImport.update({
+  id: '/premios',
+  path: '/premios',
   getParentRoute: () => rootRouteImport,
 } as any)
 const PaisesRoute = PaisesRouteImport.update({
@@ -493,6 +499,7 @@ export interface FileRoutesByFullPath {
   '/intelligence-studio': typeof IntelligenceStudioRoute
   '/minha-carreira': typeof MinhaCarreiraRoute
   '/paises': typeof PaisesRouteWithChildren
+  '/premios': typeof PremiosRoute
   '/ranking-historico': typeof RankingHistoricoRoute
   '/rankings': typeof RankingsRoute
   '/rankings-personalizados': typeof RankingsPersonalizadosRoute
@@ -565,6 +572,7 @@ export interface FileRoutesByTo {
   '/insights': typeof InsightsRoute
   '/intelligence-studio': typeof IntelligenceStudioRoute
   '/minha-carreira': typeof MinhaCarreiraRoute
+  '/premios': typeof PremiosRoute
   '/ranking-historico': typeof RankingHistoricoRoute
   '/rankings': typeof RankingsRoute
   '/rankings-personalizados': typeof RankingsPersonalizadosRoute
@@ -639,6 +647,7 @@ export interface FileRoutesById {
   '/intelligence-studio': typeof IntelligenceStudioRoute
   '/minha-carreira': typeof MinhaCarreiraRoute
   '/paises': typeof PaisesRouteWithChildren
+  '/premios': typeof PremiosRoute
   '/ranking-historico': typeof RankingHistoricoRoute
   '/rankings': typeof RankingsRoute
   '/rankings-personalizados': typeof RankingsPersonalizadosRoute
@@ -715,6 +724,7 @@ export interface FileRouteTypes {
     | '/intelligence-studio'
     | '/minha-carreira'
     | '/paises'
+    | '/premios'
     | '/ranking-historico'
     | '/rankings'
     | '/rankings-personalizados'
@@ -787,6 +797,7 @@ export interface FileRouteTypes {
     | '/insights'
     | '/intelligence-studio'
     | '/minha-carreira'
+    | '/premios'
     | '/ranking-historico'
     | '/rankings'
     | '/rankings-personalizados'
@@ -860,6 +871,7 @@ export interface FileRouteTypes {
     | '/intelligence-studio'
     | '/minha-carreira'
     | '/paises'
+    | '/premios'
     | '/ranking-historico'
     | '/rankings'
     | '/rankings-personalizados'
@@ -935,6 +947,7 @@ export interface RootRouteChildren {
   IntelligenceStudioRoute: typeof IntelligenceStudioRoute
   MinhaCarreiraRoute: typeof MinhaCarreiraRoute
   PaisesRoute: typeof PaisesRouteWithChildren
+  PremiosRoute: typeof PremiosRoute
   RankingHistoricoRoute: typeof RankingHistoricoRoute
   RankingsRoute: typeof RankingsRoute
   RankingsPersonalizadosRoute: typeof RankingsPersonalizadosRoute
@@ -1017,6 +1030,13 @@ declare module '@tanstack/react-router' {
       path: '/ranking-historico'
       fullPath: '/ranking-historico'
       preLoaderRoute: typeof RankingHistoricoRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/premios': {
+      id: '/premios'
+      path: '/premios'
+      fullPath: '/premios'
+      preLoaderRoute: typeof PremiosRouteImport
       parentRoute: typeof rootRouteImport
     }
     '/paises': {
@@ -1576,6 +1596,7 @@ const rootRouteChildren: RootRouteChildren = {
   IntelligenceStudioRoute: IntelligenceStudioRoute,
   MinhaCarreiraRoute: MinhaCarreiraRoute,
   PaisesRoute: PaisesRouteWithChildren,
+  PremiosRoute: PremiosRoute,
   RankingHistoricoRoute: RankingHistoricoRoute,
   RankingsRoute: RankingsRoute,
   RankingsPersonalizadosRoute: RankingsPersonalizadosRoute,
