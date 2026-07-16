@@ -1,8 +1,22 @@
 import { useMemo } from "react";
-import { Loader2, ArrowLeftRight, TrendingUp, Users, MapPin, Building2 } from "lucide-react";
+import {
+  Loader2,
+  ArrowLeftRight,
+  TrendingUp,
+  Users,
+  MapPin,
+  Building2,
+  Globe2,
+  Cake,
+  BarChart3,
+  Target,
+  Sparkles,
+  Repeat,
+} from "lucide-react";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Tabs, TabsList, TabsTrigger, TabsContent } from "@/components/ui/tabs";
 import { Badge } from "@/components/ui/badge";
+import { Progress } from "@/components/ui/progress";
 import {
   ResponsiveContainer,
   BarChart,
@@ -24,6 +38,15 @@ import {
   type DimensionRow,
   type ClubActivity,
 } from "@/lib/competition-market/compute";
+import {
+  computeNationalities,
+  computeAgeProfile,
+  computeTechnicalProfile,
+  computePositionalProfile,
+  computePersonalProfile,
+  computeInternalExternal,
+  type Bucket,
+} from "@/lib/competition-market/profile";
 
 const fmtInt = (n: number) => (Number.isFinite(n) ? Math.round(n).toLocaleString("pt-PT") : "—");
 const fmtNum = (n: number, d = 1) => (Number.isFinite(n) ? n.toFixed(d) : "—");
@@ -127,11 +150,45 @@ function ActiveClubsTable({ rows, mode }: { rows: ClubActivity[]; mode: keyof Cl
   );
 }
 
+function BucketTable({ rows, showAvg = true }: { rows: Bucket[]; showAvg?: boolean }) {
+  if (!rows.length) return <p className="text-xs text-muted-foreground">Sem dados suficientes.</p>;
+  const top = rows.slice(0, 15);
+  return (
+    <div className="space-y-1">
+      <div className="grid grid-cols-[1fr_60px_60px_60px_60px] gap-2 text-[11px] font-medium text-muted-foreground px-1 pb-1 border-b">
+        <span>Categoria</span>
+        <span className="text-right">Compras</span>
+        <span className="text-right">%C</span>
+        <span className="text-right">Vendas</span>
+        <span className="text-right">%V</span>
+      </div>
+      {top.map((r) => (
+        <div key={r.key} className="grid grid-cols-[1fr_60px_60px_60px_60px] gap-2 text-xs items-center py-1 border-b last:border-b-0">
+          <span className="truncate">{r.label}</span>
+          <span className="text-right tabular-nums">{r.buys}</span>
+          <span className="text-right tabular-nums text-muted-foreground">{fmtNum(r.buysPct, 0)}%</span>
+          <span className="text-right tabular-nums">{r.sales}</span>
+          <span className="text-right tabular-nums text-muted-foreground">{fmtNum(r.salesPct, 0)}%</span>
+        </div>
+      ))}
+      {showAvg && top.some((r) => r.avgBuyValue || r.avgSaleValue) && (
+        <p className="text-[10px] text-muted-foreground pt-1">Valores médios visíveis passando o rato nos gráficos.</p>
+      )}
+    </div>
+  );
+}
+
 export function CompetitionMarketTab({ ctx }: { ctx: ProfileContext }) {
   const { data: m, isLoading } = useCompetitionMarket(ctx.name);
   const flow = useMemo(() => (m ? computeFlow(m) : null), [m]);
   const od = useMemo(() => (m ? computeOriginDestination(m) : null), [m]);
   const clubs = useMemo(() => (m ? computeActiveClubs(m) : []), [m]);
+  const nat = useMemo(() => (m ? computeNationalities(m) : null), [m]);
+  const age = useMemo(() => (m ? computeAgeProfile(m) : null), [m]);
+  const tech = useMemo(() => (m ? computeTechnicalProfile(m) : null), [m]);
+  const pos = useMemo(() => (m ? computePositionalProfile(m) : null), [m]);
+  const perso = useMemo(() => (m ? computePersonalProfile(m) : null), [m]);
+  const inout = useMemo(() => (m ? computeInternalExternal(m) : null), [m]);
 
   if (isLoading) {
     return (
@@ -317,6 +374,213 @@ export function CompetitionMarketTab({ ctx }: { ctx: ProfileContext }) {
               <Card><CardContent className="pt-4"><ActiveClubsTable rows={clubs} mode="balance" /></CardContent></Card>
             </TabsContent>
           </Tabs>
+        </section>
+      )}
+
+      {/* Section 5 — Nacionalidades */}
+      {nat && (nat.byNationality.length > 0 || nat.byContinent.length > 0) && (
+        <section>
+          <h3 className="text-lg font-semibold mb-3 flex items-center gap-2">
+            <Globe2 className="h-4 w-4" /> Nacionalidades
+          </h3>
+          <p className="text-xs text-muted-foreground mb-2">
+            Cobertura: {nat.coverage}/{nat.total} movimentos com dados.
+          </p>
+          <div className="grid gap-4 md:grid-cols-2">
+            <Card>
+              <CardHeader className="pb-2"><CardTitle className="text-sm">Por país</CardTitle></CardHeader>
+              <CardContent><BucketTable rows={nat.byNationality} /></CardContent>
+            </Card>
+            <Card>
+              <CardHeader className="pb-2"><CardTitle className="text-sm">Por continente</CardTitle></CardHeader>
+              <CardContent><BucketTable rows={nat.byContinent} /></CardContent>
+            </Card>
+          </div>
+        </section>
+      )}
+
+      {/* Section 6 — Perfil etário */}
+      {age && (age.buyStats.count > 0 || age.saleStats.count > 0) && (
+        <section>
+          <h3 className="text-lg font-semibold mb-3 flex items-center gap-2">
+            <Cake className="h-4 w-4" /> Perfil etário
+          </h3>
+          <div className="grid gap-3 sm:grid-cols-2 lg:grid-cols-4">
+            <KpiCard icon={Cake} label="Idade média (compras)" value={fmtNum(age.buyStats.avg, 1)} hint={`Min ${age.buyStats.min || "—"} · Max ${age.buyStats.max || "—"}`} />
+            <KpiCard icon={Cake} label="Idade média (vendas)" value={fmtNum(age.saleStats.avg, 1)} hint={`Min ${age.saleStats.min || "—"} · Max ${age.saleStats.max || "—"}`} />
+            <KpiCard icon={Users} label="Compras <21" value={fmtInt(age.buyStats.under21)} hint={`${fmtNum((age.buyStats.under21 / Math.max(1, age.buyStats.count)) * 100, 0)}% dos reforços`} />
+            <KpiCard icon={Users} label="Vendas >30" value={fmtInt(age.saleStats.over30)} hint={`${fmtNum((age.saleStats.over30 / Math.max(1, age.saleStats.count)) * 100, 0)}% das saídas`} />
+          </div>
+          <div className="grid gap-4 md:grid-cols-2 mt-3">
+            <Card>
+              <CardHeader className="pb-2"><CardTitle className="text-sm">Distribuição etária (compras)</CardTitle></CardHeader>
+              <CardContent>
+                <div className="h-40">
+                  <ResponsiveContainer width="100%" height="100%">
+                    <BarChart data={[
+                      { g: "<21", n: age.buyStats.under21 },
+                      { g: "21-25", n: age.buyStats.age21to25 },
+                      { g: "26-30", n: age.buyStats.age26to30 },
+                      { g: ">30", n: age.buyStats.over30 },
+                    ]}>
+                      <CartesianGrid strokeDasharray="3 3" opacity={0.3} />
+                      <XAxis dataKey="g" tick={{ fontSize: 10 }} />
+                      <YAxis tick={{ fontSize: 10 }} />
+                      <Tooltip />
+                      <Bar dataKey="n" fill="hsl(var(--primary))" />
+                    </BarChart>
+                  </ResponsiveContainer>
+                </div>
+              </CardContent>
+            </Card>
+            <Card>
+              <CardHeader className="pb-2"><CardTitle className="text-sm">Distribuição etária (vendas)</CardTitle></CardHeader>
+              <CardContent>
+                <div className="h-40">
+                  <ResponsiveContainer width="100%" height="100%">
+                    <BarChart data={[
+                      { g: "<21", n: age.saleStats.under21 },
+                      { g: "21-25", n: age.saleStats.age21to25 },
+                      { g: "26-30", n: age.saleStats.age26to30 },
+                      { g: ">30", n: age.saleStats.over30 },
+                    ]}>
+                      <CartesianGrid strokeDasharray="3 3" opacity={0.3} />
+                      <XAxis dataKey="g" tick={{ fontSize: 10 }} />
+                      <YAxis tick={{ fontSize: 10 }} />
+                      <Tooltip />
+                      <Bar dataKey="n" fill="hsl(var(--muted-foreground))" />
+                    </BarChart>
+                  </ResponsiveContainer>
+                </div>
+              </CardContent>
+            </Card>
+          </div>
+          {age.yearly.length > 1 && (
+            <Card className="mt-3">
+              <CardHeader className="pb-2"><CardTitle className="text-sm">Evolução da idade média</CardTitle></CardHeader>
+              <CardContent>
+                <div className="h-48">
+                  <ResponsiveContainer width="100%" height="100%">
+                    <LineChart data={age.yearly}>
+                      <CartesianGrid strokeDasharray="3 3" opacity={0.3} />
+                      <XAxis dataKey="season_year" tick={{ fontSize: 10 }} />
+                      <YAxis tick={{ fontSize: 10 }} domain={[15, 40]} />
+                      <Tooltip />
+                      <Legend wrapperStyle={{ fontSize: 11 }} />
+                      <Line type="monotone" dataKey="avgBuyAge" name="Compras" stroke="hsl(var(--primary))" />
+                      <Line type="monotone" dataKey="avgSaleAge" name="Vendas" stroke="hsl(var(--muted-foreground))" />
+                    </LineChart>
+                  </ResponsiveContainer>
+                </div>
+              </CardContent>
+            </Card>
+          )}
+        </section>
+      )}
+
+      {/* Section 7 — Perfil técnico */}
+      {tech && (
+        <section>
+          <h3 className="text-lg font-semibold mb-3 flex items-center gap-2">
+            <BarChart3 className="h-4 w-4" /> Perfil técnico
+          </h3>
+          <div className="grid gap-3 sm:grid-cols-2 lg:grid-cols-4">
+            <KpiCard icon={BarChart3} label="CA médio (compras)" value={fmtNum(tech.buys.avgCA, 0)} />
+            <KpiCard icon={BarChart3} label="CA médio (vendas)" value={fmtNum(tech.sales.avgCA, 0)} />
+            <KpiCard icon={TrendingUp} label="VP médio (compras)" value={fmtMoney(tech.buys.avgVP)} />
+            <KpiCard icon={TrendingUp} label="VP médio (vendas)" value={fmtMoney(tech.sales.avgVP)} />
+            <KpiCard icon={TrendingUp} label="Salário médio (compras)" value={fmtMoney(tech.buys.avgSalary)} />
+            <KpiCard icon={TrendingUp} label="Salário médio (vendas)" value={fmtMoney(tech.sales.avgSalary)} />
+            <KpiCard icon={Sparkles} label="Reputação média (compras)" value={fmtNum(tech.buys.avgReputation, 1)} />
+            <KpiCard icon={Sparkles} label="Reputação média (vendas)" value={fmtNum(tech.sales.avgReputation, 1)} />
+          </div>
+          <div className="grid gap-4 md:grid-cols-2 mt-3">
+            <Card>
+              <CardHeader className="pb-2"><CardTitle className="text-sm">Distribuição por CA</CardTitle></CardHeader>
+              <CardContent><BucketTable rows={tech.byCA} /></CardContent>
+            </Card>
+            <Card>
+              <CardHeader className="pb-2"><CardTitle className="text-sm">Distribuição por reputação</CardTitle></CardHeader>
+              <CardContent><BucketTable rows={tech.byReputation} /></CardContent>
+            </Card>
+          </div>
+        </section>
+      )}
+
+      {/* Section 8 — Perfil posicional */}
+      {pos && pos.byGroup.length > 0 && (
+        <section>
+          <h3 className="text-lg font-semibold mb-3 flex items-center gap-2">
+            <Target className="h-4 w-4" /> Perfil posicional
+          </h3>
+          <Card>
+            <CardContent className="pt-4"><BucketTable rows={pos.byGroup} /></CardContent>
+          </Card>
+        </section>
+      )}
+
+      {/* Section 10 — Perfil pessoal */}
+      {perso && (perso.byPersonality.length > 0 || perso.byFoot.length > 0 || perso.byHeight.length > 0) && (
+        <section>
+          <h3 className="text-lg font-semibold mb-3 flex items-center gap-2">
+            <Sparkles className="h-4 w-4" /> Perfil pessoal
+          </h3>
+          <div className="grid gap-4 md:grid-cols-3">
+            <Card>
+              <CardHeader className="pb-2"><CardTitle className="text-sm">Personalidade</CardTitle></CardHeader>
+              <CardContent><BucketTable rows={perso.byPersonality} showAvg={false} /></CardContent>
+            </Card>
+            <Card>
+              <CardHeader className="pb-2"><CardTitle className="text-sm">Pé preferido</CardTitle></CardHeader>
+              <CardContent><BucketTable rows={perso.byFoot} showAvg={false} /></CardContent>
+            </Card>
+            <Card>
+              <CardHeader className="pb-2"><CardTitle className="text-sm">Altura</CardTitle></CardHeader>
+              <CardContent><BucketTable rows={perso.byHeight} showAvg={false} /></CardContent>
+            </Card>
+          </div>
+        </section>
+      )}
+
+      {/* Section 11 — Mercado interno vs externo */}
+      {inout && (
+        <section>
+          <h3 className="text-lg font-semibold mb-3 flex items-center gap-2">
+            <Repeat className="h-4 w-4" /> Mercado interno vs externo
+          </h3>
+          <div className="grid gap-3 md:grid-cols-2">
+            <Card>
+              <CardHeader className="pb-2"><CardTitle className="text-sm">Compras</CardTitle></CardHeader>
+              <CardContent className="space-y-2">
+                <div className="flex justify-between text-xs"><span>Interno (mesma competição)</span><span className="tabular-nums">{inout.buys.internal} · {fmtNum(inout.buys.internalPct, 0)}%</span></div>
+                <Progress value={inout.buys.internalPct} className="h-2" />
+                <div className="flex justify-between text-xs"><span>Externo</span><span className="tabular-nums">{inout.buys.external} · {fmtNum(100 - inout.buys.internalPct, 0)}%</span></div>
+              </CardContent>
+            </Card>
+            <Card>
+              <CardHeader className="pb-2"><CardTitle className="text-sm">Vendas</CardTitle></CardHeader>
+              <CardContent className="space-y-2">
+                <div className="flex justify-between text-xs"><span>Interno (mesma competição)</span><span className="tabular-nums">{inout.sales.internal} · {fmtNum(inout.sales.internalPct, 0)}%</span></div>
+                <Progress value={inout.sales.internalPct} className="h-2" />
+                <div className="flex justify-between text-xs"><span>Externo</span><span className="tabular-nums">{inout.sales.external} · {fmtNum(100 - inout.sales.internalPct, 0)}%</span></div>
+              </CardContent>
+            </Card>
+          </div>
+          {inout.internalPartners.length > 0 && (
+            <Card className="mt-3">
+              <CardHeader className="pb-2"><CardTitle className="text-sm">Principais parceiros internos</CardTitle></CardHeader>
+              <CardContent>
+                <div className="space-y-1">
+                  {inout.internalPartners.map((p) => (
+                    <div key={p.club} className="flex justify-between text-xs py-1 border-b last:border-b-0">
+                      <span className="truncate">{p.club}</span>
+                      <span className="tabular-nums">{p.total} negócios</span>
+                    </div>
+                  ))}
+                </div>
+              </CardContent>
+            </Card>
+          )}
         </section>
       )}
     </div>

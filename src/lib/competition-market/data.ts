@@ -52,6 +52,20 @@ export function seasonClubKey(club: string | null | undefined, year: number | nu
   return `${normKey(club)}::${year ?? 0}`;
 }
 
+export interface PlayerSnapshot {
+  nationality: string | null;
+  continent: string | null;
+  age: number | null;
+  ca: number | null;
+  vp: number | null;
+  salary: number | null;
+  reputation: number | null;
+  primary_position: string | null;
+  personality: string | null;
+  preferred_foot: string | null;
+  height: number | null;
+}
+
 export interface CompetitionMarketData {
   competition: string;
   // Members: clubs that belong to the competition, per season
@@ -64,7 +78,13 @@ export interface CompetitionMarketData {
     string,
     { country: string | null; competition: string | null; division_num: number | null; module: string | null }
   >;
+  // Player enrichment: nameKey::year → snapshot
+  playerIndex: Map<string, PlayerSnapshot>;
   seasons: number[]; // seasons the competition existed
+}
+
+export function playerKey(name: string | null | undefined, year: number | null | undefined) {
+  return `${normKey(name)}::${year ?? 0}`;
 }
 
 async function fetchAllMembership(): Promise<{
@@ -232,6 +252,61 @@ function buildClubCatalog(all: Awaited<ReturnType<typeof fetchAllMembership>>) {
   return map;
 }
 
+async function fetchPlayerSnapshots(
+  transfers: RawTransfer[],
+): Promise<Map<string, PlayerSnapshot>> {
+  const names = new Set<string>();
+  for (const t of transfers) {
+    if (t.person_name) names.add(t.person_name);
+  }
+  const nameList = [...names];
+  if (nameList.length === 0) return new Map();
+
+  const map = new Map<string, PlayerSnapshot>();
+  const CHUNK = 200;
+  for (let i = 0; i < nameList.length; i += CHUNK) {
+    const chunk = nameList.slice(i, i + CHUNK);
+    const { data } = (await supabase
+      .from("player_profiles")
+      .select(
+        "player_name, season_year, nationality, continent, age, ca, vp, salary, reputation, primary_position, personality, preferred_foot, height",
+      )
+      .in("player_name", chunk)) as unknown as {
+      data: Array<{
+        player_name: string;
+        season_year: number;
+        nationality: string | null;
+        continent: string | null;
+        age: number | null;
+        ca: number | null;
+        vp: number | null;
+        salary: number | null;
+        reputation: number | null;
+        primary_position: string | null;
+        personality: string | null;
+        preferred_foot: string | null;
+        height: number | null;
+      }> | null;
+    };
+    for (const p of data ?? []) {
+      map.set(playerKey(p.player_name, p.season_year), {
+        nationality: p.nationality,
+        continent: p.continent,
+        age: p.age,
+        ca: p.ca,
+        vp: p.vp == null ? null : Number(p.vp),
+        salary: p.salary == null ? null : Number(p.salary),
+        reputation: p.reputation,
+        primary_position: p.primary_position,
+        personality: p.personality,
+        preferred_foot: p.preferred_foot,
+        height: p.height == null ? null : Number(p.height),
+      });
+    }
+  }
+  return map;
+}
+
 export async function fetchCompetitionMarket(competition: string): Promise<CompetitionMarketData> {
   const all = await fetchAllMembership();
   const { members, seasons } = resolveMembers(competition, all);
@@ -249,6 +324,7 @@ export async function fetchCompetitionMarket(competition: string): Promise<Compe
     return memberKeys.has(toKey) || memberKeys.has(fromKey);
   });
   const clubCatalog = buildClubCatalog(all);
+  const playerIndex = await fetchPlayerSnapshots(transfers);
   return {
     competition,
     members,
@@ -256,6 +332,7 @@ export async function fetchCompetitionMarket(competition: string): Promise<Compe
     memberClubsAllTime,
     transfers,
     clubCatalog,
+    playerIndex,
     seasons,
   };
 }
