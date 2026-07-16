@@ -93,6 +93,7 @@ async function fetchAllMembership(): Promise<{
   international: RawInternational[];
   coaches: RawCoachAssign[];
   transfers: RawTransfer[];
+  clubCountryByName: Map<string, string>; // normKey(club) → country name
 }> {
   const [
     { data: seasonsRows },
@@ -101,6 +102,8 @@ async function fetchAllMembership(): Promise<{
     { data: internationalRaw },
     { data: coachesRaw },
     { data: transfersRaw },
+    { data: countriesRaw },
+    { data: clubsRaw },
   ] = (await Promise.all([
     supabase.from("seasons").select("id, year"),
     supabase
@@ -115,6 +118,8 @@ async function fetchAllMembership(): Promise<{
       .from("transfers")
       .select("season_year, person_name, from_club_name, to_club_name, value, person_type")
       .eq("person_type", "player"),
+    supabase.from("countries").select("id, name"),
+    supabase.from("clubs").select("name, country_id"),
   ])) as unknown as [
     { data: Array<{ id: string; year: number }> | null },
     {
