@@ -12,6 +12,8 @@ import {
   GitCompareArrows,
   Clock,
   Network,
+  Fingerprint,
+  Target,
 } from "lucide-react";
 import { SummaryTab } from "./SummaryTab";
 import { PerformanceTab } from "./PerformanceTab";
@@ -19,6 +21,8 @@ import { IntelligenceTab } from "./IntelligenceTab";
 import { HistoryTab } from "./HistoryTab";
 import { NetworkTab } from "./NetworkTab";
 import { CompareTab } from "./CompareTab";
+import { CoachIdentityTab } from "./CoachIdentityTab";
+import { CoachTacticalIdentityTab } from "./CoachTacticalIdentityTab";
 
 const ALL_KINDS = ["club", "player", "coach", "competition", "country"] as const;
 
@@ -74,6 +78,24 @@ registerProfileTab({
   order: 600,
   kinds: [...ALL_KINDS],
   render: (ctx) => <CompareTab ctx={ctx} />,
+});
+
+registerProfileTab({
+  id: "coach-identity",
+  label: "Identidade",
+  icon: Fingerprint,
+  order: 250,
+  kinds: ["coach"],
+  render: (ctx) => <CoachIdentityTab ctx={ctx} />,
+});
+
+registerProfileTab({
+  id: "coach-tactical-identity",
+  label: "Identidade Tática",
+  icon: Target,
+  order: 260,
+  kinds: ["coach"],
+  render: (ctx) => <CoachTacticalIdentityTab ctx={ctx} />,
 });
 
 export {};
