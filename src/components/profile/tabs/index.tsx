@@ -78,6 +78,8 @@ registerProfileTab({
   order: 600,
   kinds: [...ALL_KINDS],
   render: (ctx) => <CompareTab ctx={ctx} />,
+});
+
 registerProfileTab({
   id: "coach-identity",
   label: "Identidade",
