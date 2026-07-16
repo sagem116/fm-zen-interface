@@ -1,8 +1,22 @@
 import { useMemo } from "react";
-import { Loader2, ArrowLeftRight, TrendingUp, Users, MapPin, Building2 } from "lucide-react";
+import {
+  Loader2,
+  ArrowLeftRight,
+  TrendingUp,
+  Users,
+  MapPin,
+  Building2,
+  Globe2,
+  Cake,
+  BarChart3,
+  Target,
+  Sparkles,
+  Repeat,
+} from "lucide-react";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Tabs, TabsList, TabsTrigger, TabsContent } from "@/components/ui/tabs";
 import { Badge } from "@/components/ui/badge";
+import { Progress } from "@/components/ui/progress";
 import {
   ResponsiveContainer,
   BarChart,
@@ -24,6 +38,15 @@ import {
   type DimensionRow,
   type ClubActivity,
 } from "@/lib/competition-market/compute";
+import {
+  computeNationalities,
+  computeAgeProfile,
+  computeTechnicalProfile,
+  computePositionalProfile,
+  computePersonalProfile,
+  computeInternalExternal,
+  type Bucket,
+} from "@/lib/competition-market/profile";
 
 const fmtInt = (n: number) => (Number.isFinite(n) ? Math.round(n).toLocaleString("pt-PT") : "—");
 const fmtNum = (n: number, d = 1) => (Number.isFinite(n) ? n.toFixed(d) : "—");
