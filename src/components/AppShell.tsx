@@ -66,6 +66,7 @@ const NAV_GROUPS: NavGroup[] = [
     items: [
       { to: "/", label: "Dashboard", icon: LayoutDashboard },
       { to: "/importar", label: "Importar Época", icon: Upload },
+      { to: "/premios", label: "Prémios", icon: Trophy },
     ],
   },
   {
