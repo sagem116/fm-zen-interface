@@ -12,6 +12,8 @@ import {
   Target,
   Sparkles,
   Repeat,
+  Compass,
+  Lightbulb,
 } from "lucide-react";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Tabs, TabsList, TabsTrigger, TabsContent } from "@/components/ui/tabs";
@@ -47,6 +49,12 @@ import {
   computeInternalExternal,
   type Bucket,
 } from "@/lib/competition-market/profile";
+import {
+  computeIdentity,
+  computeIntelligence,
+  type IdentityClassification,
+  type IntelligenceTag,
+} from "@/lib/competition-market/identity";
 
 const fmtInt = (n: number) => (Number.isFinite(n) ? Math.round(n).toLocaleString("pt-PT") : "—");
 const fmtNum = (n: number, d = 1) => (Number.isFinite(n) ? n.toFixed(d) : "—");
