@@ -257,13 +257,22 @@ function buildClubCatalog(all: Awaited<ReturnType<typeof fetchAllMembership>>) {
       module: prev?.module ?? s.module,
     });
   }
-  // Country via coach_assignments
+  // Country: only from clubs → countries. coach_assignments.country_name in
+  // this project holds numeric FM IDs (e.g. "1", "12", "-") and must NOT be
+  // used as a display name — see Bug 1.
+  for (const [key, entry] of map.entries()) {
+    if (entry.country) continue;
+    const club = key.split("::")[0];
+    const country = all.clubCountryByName.get(club);
+    if (country) entry.country = country;
+  }
+  // Also seed clubs that appear in coach_assignments but not standings.
   for (const c of all.coaches) {
     if (!c.club_name || !c.season_year) continue;
     const key = seasonClubKey(c.club_name, c.season_year);
-    const prev = map.get(key) ?? { country: null, competition: null, division_num: null, module: c.module };
-    if (!prev.country && c.country_name) prev.country = c.country_name;
-    map.set(key, prev);
+    if (map.has(key)) continue;
+    const country = all.clubCountryByName.get(normKey(c.club_name)) ?? null;
+    map.set(key, { country, competition: null, division_num: null, module: c.module });
   }
   return map;
 }
