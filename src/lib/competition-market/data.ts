@@ -52,6 +52,20 @@ export function seasonClubKey(club: string | null | undefined, year: number | nu
   return `${normKey(club)}::${year ?? 0}`;
 }
 
+export interface PlayerSnapshot {
+  nationality: string | null;
+  continent: string | null;
+  age: number | null;
+  ca: number | null;
+  vp: number | null;
+  salary: number | null;
+  reputation: number | null;
+  primary_position: string | null;
+  personality: string | null;
+  preferred_foot: string | null;
+  height: number | null;
+}
+
 export interface CompetitionMarketData {
   competition: string;
   // Members: clubs that belong to the competition, per season
@@ -64,7 +78,13 @@ export interface CompetitionMarketData {
     string,
     { country: string | null; competition: string | null; division_num: number | null; module: string | null }
   >;
+  // Player enrichment: nameKey::year → snapshot
+  playerIndex: Map<string, PlayerSnapshot>;
   seasons: number[]; // seasons the competition existed
+}
+
+export function playerKey(name: string | null | undefined, year: number | null | undefined) {
+  return `${normKey(name)}::${year ?? 0}`;
 }
 
 async function fetchAllMembership(): Promise<{
