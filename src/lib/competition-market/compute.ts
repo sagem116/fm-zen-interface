@@ -115,10 +115,16 @@ function attribute(
   const club = side === "from" ? t.from_club_name : t.to_club_name;
   const key = seasonClubKey(club, t.season_year);
   const meta = catalog.get(key);
+  // Defensive: never surface numeric IDs as country names.
+  const rawCountry = meta?.country ?? null;
+  const country =
+    rawCountry && !/^\s*-?\d+\s*$/.test(rawCountry) && rawCountry.trim() !== "-"
+      ? rawCountry
+      : "País desconhecido";
   return {
-    club: club ?? "Desconhecido",
-    country: meta?.country ?? "Desconhecido",
-    competition: meta?.competition ?? "Desconhecido",
+    club: club ?? "Clube desconhecido",
+    country,
+    competition: meta?.competition ?? "Competição desconhecida",
     division: meta?.division_num != null ? `Div. ${meta.division_num}` : "—",
   };
 }
