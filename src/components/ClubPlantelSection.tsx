@@ -1,5 +1,6 @@
 import { useMemo, useState } from "react";
 import { Link } from "@tanstack/react-router";
+import { useQuery } from "@tanstack/react-query";
 import { ChevronDown, ChevronRight, Users } from "lucide-react";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import {
@@ -11,12 +12,36 @@ import {
 } from "@/components/ui/select";
 import { Label } from "@/components/ui/label";
 import { Button } from "@/components/ui/button";
+import { supabase } from "@/integrations/supabase/client";
 import { usePlayerStatsData } from "@/lib/usePlayerStatsData";
 import { usePlayerUniverse } from "@/lib/player-universe";
 import { fmtNum, fmtMoney } from "@/lib/fmt";
 
 function norm(s: string | null | undefined) {
   return (s ?? "").trim().toLowerCase();
+}
+
+// Fallback squad source: player_profiles for that (club, season). This runs
+// whether or not player_stats has rows for the pairing, and is merged with
+// player_stats so the roster shows even when match stats haven't been
+// imported yet (Bug 3).
+function useProfilesForClubSeason(clubName: string, season: number | null) {
+  return useQuery({
+    queryKey: ["club-roster-profiles", norm(clubName), season],
+    enabled: !!clubName && season != null,
+    staleTime: 5 * 60 * 1000,
+    queryFn: async () => {
+      const { data, error } = await supabase
+        .from("player_profiles")
+        .select(
+          "player_name, idu, club, season_year, nationality, age, ca, cp, vp, salary, primary_position",
+        )
+        .eq("season_year", season!)
+        .ilike("club", clubName);
+      if (error) throw new Error(error.message);
+      return data ?? [];
+    },
+  });
 }
 
 export function ClubPlantelSection({
@@ -27,32 +52,69 @@ export function ClubPlantelSection({
   season: number | null;
 }) {
   const { data, isLoading } = usePlayerStatsData();
+  const profiles = useProfilesForClubSeason(clubName, season);
   const universe = usePlayerUniverse();
   const [open, setOpen] = useState(true);
 
   const rows = useMemo(() => {
-    if (!data || season == null) return [];
+    if (season == null) return [];
     const t = norm(clubName);
-    const filtered = data.players.filter((r) => norm(r.club) === t && r.season_year === season);
-    // Dedup by player (keep the row with most games; then highest ca)
-    const map = new Map<string, (typeof filtered)[number]>();
-    for (const r of filtered) {
-      const key = (r.idu && r.idu.trim()) || `${norm(r.player_name)}`;
-      const cur = map.get(key);
+
+    // 1) Match stats rows (may be empty when player_stats hasn't been imported).
+    const statRows = (data?.players ?? []).filter(
+      (r) => norm(r.club) === t && r.season_year === season,
+    );
+    const byKey = new Map<string, (typeof statRows)[number]>();
+    for (const r of statRows) {
+      const key = (r.idu && r.idu.trim()) || `n:${norm(r.player_name)}`;
+      const cur = byKey.get(key);
       if (
         !cur ||
         (r.games ?? 0) > (cur.games ?? 0) ||
         ((r.games ?? 0) === (cur.games ?? 0) && (r.ca ?? 0) > (cur.ca ?? 0))
       ) {
-        map.set(key, r);
+        byKey.set(key, r);
       }
     }
-    // Merge individual data from Player Universe
-    const merged = [...map.values()].map((r) => {
+
+    // 2) Profile rows — canonical roster source. Any player_profile for
+    // (club, season) that has no matching stats row is added as a stats-less
+    // roster entry so plantel/estatísticas/métricas share the same source.
+    for (const p of profiles.data ?? []) {
+      const key = (p.idu && p.idu.trim()) || `n:${norm(p.player_name)}`;
+      if (byKey.has(key)) continue;
+      byKey.set(key, {
+        id: `profile:${key}`,
+        season_year: p.season_year,
+        idu: p.idu ?? null,
+        player_name: p.player_name,
+        club: p.club ?? clubName,
+        nationality: p.nationality ?? null,
+        age: p.age ?? null,
+        ca: p.ca ?? null,
+        cp: p.cp ?? null,
+        vp: p.vp != null ? Number(p.vp) : null,
+        salary: p.salary != null ? Number(p.salary) : null,
+        // stats columns not available without player_stats import
+        games: null,
+        gls: null,
+        ast: null,
+        xg: null,
+        pass_pct: null,
+        tackles_per90: null,
+        fouls_per90: null,
+        shot_pct: null,
+        yellows: null,
+        reds: null,
+        avg_rating: null,
+      } as unknown as (typeof statRows)[number]);
+    }
+
+    // Merge individual data from Player Universe (as before)
+    const merged = [...byKey.values()].map((r) => {
       const uni = r.idu ? universe.getByIdu(r.idu) : universe.getByName(r.player_name);
       return {
         ...r,
-        // prefer Player Universe individual fields
         player_name: uni?.name ?? r.player_name,
         nationality: uni?.country ?? r.nationality,
         age: uni?.age ?? r.age,
@@ -62,10 +124,10 @@ export function ClubPlantelSection({
       } as typeof r;
     });
 
-    return merged.sort((a, b) => (Number(b.ca ?? 0) - Number(a.ca ?? 0)));
-  }, [data, clubName, season, universe]);
+    return merged.sort((a, b) => Number(b.ca ?? 0) - Number(a.ca ?? 0));
+  }, [data, profiles.data, clubName, season, universe]);
 
-  if (isLoading || season == null) return null;
+  if ((isLoading && profiles.isLoading) || season == null) return null;
 
   return (
     <Card>
