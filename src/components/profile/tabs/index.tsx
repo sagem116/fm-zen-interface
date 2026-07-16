@@ -12,6 +12,8 @@ import {
   GitCompareArrows,
   Clock,
   Network,
+  Fingerprint,
+  Target,
 } from "lucide-react";
 import { SummaryTab } from "./SummaryTab";
 import { PerformanceTab } from "./PerformanceTab";
@@ -19,6 +21,8 @@ import { IntelligenceTab } from "./IntelligenceTab";
 import { HistoryTab } from "./HistoryTab";
 import { NetworkTab } from "./NetworkTab";
 import { CompareTab } from "./CompareTab";
+import { CoachIdentityTab } from "./CoachIdentityTab";
+import { CoachTacticalIdentityTab } from "./CoachTacticalIdentityTab";
 
 const ALL_KINDS = ["club", "player", "coach", "competition", "country"] as const;
 
