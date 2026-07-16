@@ -121,4 +121,13 @@ registerProfileTab({
   render: (ctx) => <CoachTransfersTab ctx={ctx} />,
 });
 
+registerProfileTab({
+  id: "competition-market",
+  label: "Mercado",
+  icon: ArrowLeftRight,
+  order: 290,
+  kinds: ["competition"],
+  render: (ctx) => <CompetitionMarketTab ctx={ctx} />,
+});
+
 export {};
