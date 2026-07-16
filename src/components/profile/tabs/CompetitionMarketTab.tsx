@@ -593,6 +593,39 @@ export function CompetitionMarketTab({ ctx }: { ctx: ProfileContext }) {
           )}
         </section>
       )}
+
+      {/* Section 1 — Identidade */}
+      {identity.length > 0 && (
+        <section>
+          <h3 className="text-lg font-semibold mb-3 flex items-center gap-2">
+            <Compass className="h-4 w-4" /> Identidade de mercado
+          </h3>
+          <div className="grid gap-3 sm:grid-cols-2 lg:grid-cols-3">
+            {identity.map((c) => (
+              <IdentityCard key={c.key} c={c} />
+            ))}
+          </div>
+        </section>
+      )}
+
+      {/* Section 16 — Inteligência */}
+      {intel.length > 0 && (
+        <section>
+          <h3 className="text-lg font-semibold mb-3 flex items-center gap-2">
+            <Lightbulb className="h-4 w-4" /> Inteligência de mercado
+          </h3>
+          <div className="grid gap-3 md:grid-cols-2">
+            {intel.filter((tag) => tag.active).map((tag) => (
+              <IntelligenceCard key={tag.key} tag={tag} />
+            ))}
+            {intel.filter((tag) => tag.active).length === 0 && (
+              <p className="text-xs text-muted-foreground">
+                Nenhuma leitura suficientemente forte para produzir uma conclusão.
+              </p>
+            )}
+          </div>
+        </section>
+      )}
     </div>
   );
 }
