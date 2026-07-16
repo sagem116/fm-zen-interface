@@ -150,11 +150,45 @@ function ActiveClubsTable({ rows, mode }: { rows: ClubActivity[]; mode: keyof Cl
   );
 }
 
+function BucketTable({ rows, showAvg = true }: { rows: Bucket[]; showAvg?: boolean }) {
+  if (!rows.length) return <p className="text-xs text-muted-foreground">Sem dados suficientes.</p>;
+  const top = rows.slice(0, 15);
+  return (
+    <div className="space-y-1">
+      <div className="grid grid-cols-[1fr_60px_60px_60px_60px] gap-2 text-[11px] font-medium text-muted-foreground px-1 pb-1 border-b">
+        <span>Categoria</span>
+        <span className="text-right">Compras</span>
+        <span className="text-right">%C</span>
+        <span className="text-right">Vendas</span>
+        <span className="text-right">%V</span>
+      </div>
+      {top.map((r) => (
+        <div key={r.key} className="grid grid-cols-[1fr_60px_60px_60px_60px] gap-2 text-xs items-center py-1 border-b last:border-b-0">
+          <span className="truncate">{r.label}</span>
+          <span className="text-right tabular-nums">{r.buys}</span>
+          <span className="text-right tabular-nums text-muted-foreground">{fmtNum(r.buysPct, 0)}%</span>
+          <span className="text-right tabular-nums">{r.sales}</span>
+          <span className="text-right tabular-nums text-muted-foreground">{fmtNum(r.salesPct, 0)}%</span>
+        </div>
+      ))}
+      {showAvg && top.some((r) => r.avgBuyValue || r.avgSaleValue) && (
+        <p className="text-[10px] text-muted-foreground pt-1">Valores médios visíveis passando o rato nos gráficos.</p>
+      )}
+    </div>
+  );
+}
+
 export function CompetitionMarketTab({ ctx }: { ctx: ProfileContext }) {
   const { data: m, isLoading } = useCompetitionMarket(ctx.name);
   const flow = useMemo(() => (m ? computeFlow(m) : null), [m]);
   const od = useMemo(() => (m ? computeOriginDestination(m) : null), [m]);
   const clubs = useMemo(() => (m ? computeActiveClubs(m) : []), [m]);
+  const nat = useMemo(() => (m ? computeNationalities(m) : null), [m]);
+  const age = useMemo(() => (m ? computeAgeProfile(m) : null), [m]);
+  const tech = useMemo(() => (m ? computeTechnicalProfile(m) : null), [m]);
+  const pos = useMemo(() => (m ? computePositionalProfile(m) : null), [m]);
+  const perso = useMemo(() => (m ? computePersonalProfile(m) : null), [m]);
+  const inout = useMemo(() => (m ? computeInternalExternal(m) : null), [m]);
 
   if (isLoading) {
     return (
