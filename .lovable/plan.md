@@ -1,99 +1,78 @@
-# Plano — Perfis Rápidos + Histórico de Imports
+# Mercado de Transferências das Competições
 
-Dois objetivos independentes, sem alterar arquitetura, Design System, Engines (Imports/Rankings/Scores/Entity) nem fórmulas.
+Módulo determinístico (sem IA) disponível no perfil de qualquer competição: Super League, Ligas Nacionais, Competições Continentais e Competições Internacionais. Todos os indicadores calculados a partir das transferências existentes, com histórico por época e agregado total.
 
----
+## Arquitetura (partilhada entre fases)
 
-## Objetivo 1 — Perfis rápidos e estáveis
+Um único módulo `src/lib/competition-market/` cobre carregamento de dados, agregação e classificações.
 
-### Auditoria (pontos já identificados)
+```
+src/lib/competition-market/
+  types.ts            → tipos partilhados (Scope, MarketDataset, ...)
+  data.ts             → useCompetitionMarket(name, scope) — carrega transfers + player_profiles + standings + coach_assignments filtrados por competição/época
+  aggregate.ts        → normalizações comuns (por época + agregado)
+  origin.ts           → origem/destino, países parceiros, mercado interno vs externo
+  players.ts          → nacionalidades, perfil etário, técnico, posicional
+  finance.ts          → fluxo financeiro, ROI, margens
+  clubs.ts            → ranking de clubes ativos
+  talent.ts           → exportação/importação de talento, jovens/pico/veteranos
+  identity.ts         → 12 classificações da secção 1 + 16 tags "Inteligência de Mercado"
+```
 
-1. **Crash ativo** em `src/routes/jogadores.$name.tsx`:
-   - Guard incorreto na linha 60: `if (!data && !fallbackProfile)` deveria ser `if (!profile && !fallbackProfile)`.
-   - Quando `data` existe mas o jogador não é encontrado, `usedProfile` fica `null` e `usedProfile.history` rebenta.
-   - Confirmado nos logs de runtime: `TypeError: Cannot read properties of null (reading 'history')` em `PlayerProfilePage`.
+UI vive em `src/components/profile/tabs/competition/CompetitionMarketTab.tsx` com sub-navegação interna (as 16 secções agrupadas em 6 grupos de UI: Identidade · Fluxo · Origem & Destino · Perfil · Financeiro · Inteligência). Registada em `src/components/profile/tabs/index.tsx` com `kinds: ["competition"]`.
 
-2. **`useRankings()`** é o fetch mais pesado e é chamado por **todas** as páginas de perfil (jogadores, treinadores, clubes, competições, países). Carrega o dataset inteiro no primeiro acesso.
-   - Já é cacheado via TanStack Query, portanto reaproveita entre perfis.
-   - Problema: no **primeiro** perfil aberto após reload, todo o processamento (ranks, evolução, standings, coach assignments, etc.) corre antes do render inicial.
+## Dados usados
 
-3. **Cálculos pesados feitos em render** em cada perfil:
-   - `jogadores.$name.tsx`: `rankForYear` percorre `data.data.players` **por cada época** dentro de um `useMemo` que depende de `data`, `profile`, `fallbackProfile`, `universe` — dispara sempre que `universe` muda de referência.
-   - `narrativeCtx` reconstrói um `Map` sobre todos os jogadores para calcular o rank global.
-   - Padrões semelhantes em `treinadores.$name.tsx`, `clubes.$name.tsx`, `competicoes.$name.tsx`, `paises.$name.tsx`.
+- `transfers` (person_type='player') — colunas: from_club_name, to_club_name, value, season_year, person_name.
+- `player_profiles` — CA, PA, VP, idade, altura, peso, nacionalidade, continente, posição.
+- `standings` — resolve clubes da competição por época (`competition`, `module`).
+- `coach_assignments` — resolve continental/international (competição → clubes participantes).
+- `clubs` / `countries` — join club→país/continente para origem/destino/parceiros.
 
-4. **Componentes secundários carregados de forma síncrona** dentro do `ProfileShell` (registry de tabs). Todas as tabs importam os módulos à cabeça mesmo quando o utilizador só vê a tab default.
+Perfis continentais e internacionais definem "clubes da competição" via `continental_results` / `international_results` para essa época; nacionais/super league via `standings.competition`.
 
-### Alterações
+Todos os indicadores devolvem `{ value, byYear[], evolution, sources: string[] }` — cada classificação regista quais métricas a originaram (requisito do utilizador).
 
-**Correções de robustez (prioridade 1 — resolve o crash)**
+## Faseamento proposto
 
-- `jogadores.$name.tsx`: corrigir o guard para `if (!profile && !fallbackProfile) return null;`.
-- Auditar guards equivalentes em `treinadores.$name.tsx`, `clubes.$name.tsx`, `competicoes.$name.tsx`, `paises.$name.tsx`. Todos devem:
-  - Verificar `profile`/`fallbackProfile` antes de aceder a `.history`, `.totals`, etc.
-  - Substituir acessos crus por optional chaining + defaults (`?? []`, `?? {}`).
-  - Devolver `"Sem dados disponíveis"` em vez de rebentar.
+### Fase A — Fundação + Fluxo (secções 2, 3, 4, 12)
+- Resolução dos clubes da competição por época + query única (bulk).
+- Fluxo global: compras, vendas, saldo jogadores/financeiro, médias, maiores, maior janela, evolução anual.
+- Origem/destino: rankings por país, continente, competição, divisão, clube.
+- Clubes mais ativos: rankings de compras/vendas/investimento/saldo.
 
-**Performance (prioridade 2 — sem tocar em engines)**
+### Fase B — Perfis (secções 5, 6, 7, 8, 10, 11)
+- Nacionalidades preferidas (contratadas + vendidas): número, %, valor, CA, PA, idade, reputação.
+- Perfil etário (7 buckets) + classificação automática.
+- Perfil técnico (CA/PA/reputação/valor/altura/peso/experiência internacional).
+- Perfil posicional detalhado (GR/DD/DC/DE/MDC/MC/MO/ED/EE/PL) + grupos + classificação "investe mais em defesa/meio/ataque".
+- Tipo de contratações (livre, empréstimo, definitiva, fim contrato, regresso, promoção da formação) — inferido de `value=0`, `from_club_name` nulo/marcado, transição intra-clube.
+- Mercado interno vs externo (dentro da própria liga, nacional, continental, intercontinental).
 
-- Extrair "ranking por época" para um `useMemo` que depende apenas de `data` (fica cacheado entre trocas de perfil). Reutilizado por todos os perfis via um pequeno seletor em `src/lib/useRankings.ts` (memo com `WeakMap` sobre o `data`).
-- Reduzir dependências dos `useMemo` em perfis: dropar `universe` das dependências dos cálculos que não o usam; usar `universe.getByName`/`getByIdu` fora do memo pesado.
-- Split de tabs secundárias em `React.lazy` no `registry` de tabs de perfil (a tab default fica eager, o resto lazy) — mantém o Design System intacto.
+### Fase C — Financeiro + Talento (secções 9, 13, 14, 15)
+- Perfil financeiro: ROI, margem, eficiência, rentabilidade, lucro/perda.
+- Países parceiros: mapa fornecedor/recetor + histórico.
+- Exportação de talento (jovens/pico/veteranos vendidos).
+- Importação de talento (experientes, estrelas, jovens promissores, wonderkids, veteranos).
 
-**Robustez transversal**
+### Fase D — Identidade + Inteligência (secções 1, 16)
+- 12 classificações da secção 1 (Importadora, Exportadora, Formadora, Compradora, Vendedora, Desenvolvimento, Veteranos, Estrelas, Revenda, Conservadora, Agressiva, Equilibrada) — cada uma com score, percentil calculado no universo de competições, explicação e evolução histórica.
+- 16 tags de "Inteligência de Mercado" com fontes explícitas (métricas que produziram a conclusão).
+- Percentis calculados uma única vez sobre todas as competições e cacheados via TanStack Query.
 
-- Wrapper `<ProfileErrorBoundary>` à volta de `ProfileShell` que apanha crashes e mostra `"Sem dados disponíveis"` em vez do error component genérico do router. Cada tab valida `ctx?.profile?.history ?? []`.
+## Detalhes técnicos
 
-### Não-alvos (o que **não** vai ser mexido)
+- Todas as agregações são feitas em memória a partir de queries bulk (mesmo padrão de `useCoachRoster` + `useCoachUniverse` da Fase A/B do perfil de treinador).
+- Cache TanStack Query por (nome_competição, âmbito), stale 10min.
+- Zero alterações a Engines, Rankings, Scores ou schema da BD.
+- Todas as classificações e tags emitem `reason` + `metric` visíveis no UI (nunca conclusão sem justificação).
 
-- `useRankings`, `buildPlayerProfile`, `buildCoachProfile`, etc. (engines).
-- Estrutura de tabelas ou tipos.
-- Estilos, tokens CSS, componentes de UI do shell.
-- Fórmulas de Scores, Rankings, Editorial.
+## Fora do âmbito
 
----
+- Não altera Engines, Rankings, Scores ou o perfil de outras entidades.
+- Não introduz nova rota — vive dentro do perfil de competição já existente.
+- Não altera fluxos de importação.
 
-## Objetivo 2 — Histórico de Imports
+## Confirmação
 
-### Auditoria
-
-- `imports` é gravado por vários writers (`fm-player-profiles-writer.ts`, etc.) com `warnings: { messages: [...], records: N }` — estrutura antiga.
-- Writers mais recentes gravam `warnings` como **array** direto (`generateImportReport`) ou como objeto rico com `statistics`, `resolvedColumns`, `trace`.
-- A UI de detalhes lê apenas um dos formatos → contadores a 0 e avisos sem detalhe quando o formato não bate.
-
-### Alterações (só na leitura/apresentação)
-
-- Adicionar um **normalizador** `normalizeImportReport(raw)` em `src/lib/imports/report.ts` que aceita todas as variantes (`warnings: []`, `warnings: { messages }`, `warnings: { messages, records }`, `warnings: ImportReport`) e devolve sempre a mesma forma:
-  ```
-  {
-    stats: { players, coaches, clubs, competitions, countries, created, updated, skipped, errors, warnings, durationMs },
-    warnings: Array<{ type, message, source, severity }>,
-    raw
-  }
-  ```
-- `ImportReportViewer.tsx` passa a usar o normalizador. Se um campo não existir, mostra "—", nunca 0 fantasma.
-- Detalhe dos avisos: expandir cada linha para mostrar `type`, `message`, `source`, `severity` (fallbacks para variantes antigas).
-- Contador de avisos deixa de aparecer sem lista: se `warnings.length === 0`, não mostrar chip; se >0, sempre expansível.
-
-### Não-alvos
-
-- Nenhuma alteração aos writers, ao pipeline de import, ao formato gravado em BD, ou aos engines de Rankings/Scores.
-- Compatibilidade total com registos existentes (o normalizador cobre todos os formatos históricos).
-
----
-
-## Validação
-
-- Playwright: abrir 5 perfis (jogador conhecido, jogador inexistente, treinador, clube, país) — todos abrem sem crash; jogador inexistente mostra "Sem dados disponíveis".
-- Playwright: abrir `/importar`, expandir 3 imports (um com warnings, um só ok, um antigo) — todos apresentam contadores corretos e lista de avisos com detalhe.
-- Confirmar que Rankings, Scores e Dashboard continuam a funcionar.
-
-## Ficheiros que serão tocados (estimativa)
-
-- `src/routes/jogadores.$name.tsx`, `treinadores.$name.tsx`, `clubes.$name.tsx`, `competicoes.$name.tsx`, `paises.$name.tsx` — guards + robustez.
-- `src/components/profile/ProfileShell.tsx` + `registry.ts` — error boundary + lazy tabs.
-- `src/lib/useRankings.ts` — seletor memoizado de rank-por-época (opcional).
-- `src/lib/imports/report.ts` — adiciona `normalizeImportReport`.
-- `src/components/ImportReportViewer.tsx` — usa o normalizador + detalhe de avisos.
-
-Aprova para eu executar?
+Podemos avançar com a **Fase A** já ou preferes que revejamos algum ponto do plano primeiro? Se aprovares, prossigo com o carregamento de dados, secções 2–4 e 12 no próximo turno.

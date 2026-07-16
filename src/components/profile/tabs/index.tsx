@@ -27,6 +27,7 @@ import { CoachIdentityTab } from "./CoachIdentityTab";
 import { CoachTacticalIdentityTab } from "./CoachTacticalIdentityTab";
 import { CoachDevelopmentTab } from "./CoachDevelopmentTab";
 import { CoachTransfersTab } from "./CoachTransfersTab";
+import { CompetitionMarketTab } from "./CompetitionMarketTab";
 
 const ALL_KINDS = ["club", "player", "coach", "competition", "country"] as const;
 
@@ -118,6 +119,15 @@ registerProfileTab({
   order: 280,
   kinds: ["coach"],
   render: (ctx) => <CoachTransfersTab ctx={ctx} />,
+});
+
+registerProfileTab({
+  id: "competition-market",
+  label: "Mercado",
+  icon: ArrowLeftRight,
+  order: 290,
+  kinds: ["competition"],
+  render: (ctx) => <CompetitionMarketTab ctx={ctx} />,
 });
 
 export {};
