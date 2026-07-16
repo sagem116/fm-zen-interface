@@ -14,6 +14,8 @@ import {
   Network,
   Fingerprint,
   Target,
+  TrendingUp,
+  ArrowLeftRight,
 } from "lucide-react";
 import { SummaryTab } from "./SummaryTab";
 import { PerformanceTab } from "./PerformanceTab";
@@ -23,6 +25,8 @@ import { NetworkTab } from "./NetworkTab";
 import { CompareTab } from "./CompareTab";
 import { CoachIdentityTab } from "./CoachIdentityTab";
 import { CoachTacticalIdentityTab } from "./CoachTacticalIdentityTab";
+import { CoachDevelopmentTab } from "./CoachDevelopmentTab";
+import { CoachTransfersTab } from "./CoachTransfersTab";
 
 const ALL_KINDS = ["club", "player", "coach", "competition", "country"] as const;
 
@@ -96,6 +100,24 @@ registerProfileTab({
   order: 260,
   kinds: ["coach"],
   render: (ctx) => <CoachTacticalIdentityTab ctx={ctx} />,
+});
+
+registerProfileTab({
+  id: "coach-development",
+  label: "Desenvolvimento",
+  icon: TrendingUp,
+  order: 270,
+  kinds: ["coach"],
+  render: (ctx) => <CoachDevelopmentTab ctx={ctx} />,
+});
+
+registerProfileTab({
+  id: "coach-transfers",
+  label: "Transferências",
+  icon: ArrowLeftRight,
+  order: 280,
+  kinds: ["coach"],
+  render: (ctx) => <CoachTransfersTab ctx={ctx} />,
 });
 
 export {};
