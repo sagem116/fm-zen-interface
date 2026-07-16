@@ -197,6 +197,8 @@ export function CompetitionMarketTab({ ctx }: { ctx: ProfileContext }) {
   const pos = useMemo(() => (m ? computePositionalProfile(m) : null), [m]);
   const perso = useMemo(() => (m ? computePersonalProfile(m) : null), [m]);
   const inout = useMemo(() => (m ? computeInternalExternal(m) : null), [m]);
+  const identity = useMemo(() => (m ? computeIdentity(m) : []), [m]);
+  const intel = useMemo(() => (m ? computeIntelligence(m) : []), [m]);
 
   if (isLoading) {
     return (
