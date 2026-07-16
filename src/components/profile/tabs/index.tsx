@@ -27,6 +27,7 @@ import { CoachIdentityTab } from "./CoachIdentityTab";
 import { CoachTacticalIdentityTab } from "./CoachTacticalIdentityTab";
 import { CoachDevelopmentTab } from "./CoachDevelopmentTab";
 import { CoachTransfersTab } from "./CoachTransfersTab";
+import { CompetitionMarketTab } from "./CompetitionMarketTab";
 
 const ALL_KINDS = ["club", "player", "coach", "competition", "country"] as const;
 
