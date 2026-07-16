@@ -163,16 +163,27 @@ async function fetchAllMembership(): Promise<{
       }> | null;
     },
     { data: Array<RawTransfer & { person_type: string }> | null },
+    { data: Array<{ id: string; name: string }> | null },
+    { data: Array<{ name: string; country_id: string | null }> | null },
   ];
   const yearById = new Map<string, number>();
   for (const s of seasonsRows ?? []) yearById.set(s.id, s.year);
   const yearOf = (id: string) => yearById.get(id) ?? 0;
+  const countryNameById = new Map<string, string>();
+  for (const c of countriesRaw ?? []) countryNameById.set(c.id, c.name);
+  const clubCountryByName = new Map<string, string>();
+  for (const c of clubsRaw ?? []) {
+    if (!c.name) continue;
+    const country = c.country_id ? countryNameById.get(c.country_id) : null;
+    if (country) clubCountryByName.set(normKey(c.name), country);
+  }
   return {
     standings: (standingsRaw ?? []).map((r) => ({ ...r, season_year: yearOf(r.season_id) })),
     continental: (continentalRaw ?? []).map((r) => ({ ...r, season_year: yearOf(r.season_id) })),
     international: (internationalRaw ?? []).map((r) => ({ ...r, season_year: yearOf(r.season_id) })),
     coaches: (coachesRaw ?? []).map((r) => ({ ...r, season_year: yearOf(r.season_id) })),
     transfers: transfersRaw ?? [],
+    clubCountryByName,
   };
 }
 
