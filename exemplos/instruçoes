@@ -1,0 +1,63 @@
+Ficheiro 01 Clubes
+Contem a reputaçao de cada clube numa folha
+Noutra folha liga cada clube a um pais e esse pais a um continente
+
+02 Treinadores
+Contem toda a informaçao dos treinadores. 
+Vai ser usado para criar o perfil de cada treinador
+Exemplos: Perfil psicologico(coluna Personalidade,colunas Ada Amb Cont)
+Contem treinadores de clubes e treinadoes de seleçao
+Os treinadores na app devem ser identificados pelo IDU individual
+
+03 Jogadores
+1Contem todos os dados de um jogador desde de personalidade,atributos e estatisticas(estatisticas de todas as competiçoes agregadas)
+2Os jogadores na app toda devem ser sempre identificados pelo IDU individual, quando este esta em falta devera ser utilizado o Nome+Clube+Idade
+3Apesar de termos outra folha mais a frente com jogadores e estatisticas, esta deve ser 
+a fonte principal por defeito de dados para os Jogadores que a app le. Em algumas exeçoes sera utilizada a outra folha como fonte para os dados de jogadores mas que serao identifcas durante a construçao da app
+
+04 competiçoes
+Aqui indica a reputaçao de cada competiçao
+
+05 classificaçoes
+1Aqui indica as tabelas classificativas de cada competiçao. 
+2Esta dividida em Super League Ligas Nacionais Continentais e Internacionais
+2.1 Super League - So e atribuido o estatudo de:
+	Campeao - a quem tem um C na coluna Inf
+	Quase Campeao - a quem na Super League 1 ficou entre o 1 e o 2 lugar e nao tem um C em inf
+	Promovido - A quem tem um P na coluna Inf nas restantes competiçoes
+	Desceu - A quem tem um D na coluna Inf
+2.2 A coluna VP significa vitoria por penaltis(estas competiçoes tem um formato onde depois de um empate vai sempre a penaltis e o vencedor ganha 2 pontos e o derrotado nos penaltis ganha 1
+2.3 Ligas Nacionais - A coluna Inf indica quem foi Campeao(C),foi promovido(P), desceu(D) ou se qualuficou para as competiçoes continentais
+2.4 Continentais - Serve para mostrar o registo das competiçoes continentais de clubes (exemplo Champions league, Libertadores etc)
+Este formato e difrente dos outros dois anteriores onde era uma tabela muito direta. Neste formato temos as colunas
+Competicao	Vencedor	Finalista	Meia Final Equipa 1	Meia Final Equipa 2	Quartos de Final Equipa 1	Quartos de Final Equipa 2	Quartos de Final Equipa 3	Quartos de Final Equipa 4	
+Onde cada coluna indica a posiçao de cada equipa na competiçao
+2.5 Internacionais - Aqui serve para mostrar o registo das competiçoes de seleçoes
+Seugue o mesmo formato da folha de Continentais
+
+06 Estatísticas (Competições + Jogadores)
+1Aqui temos a segunda folha de Jogadores e estatisticas. 
+1.1 Esta folha serve para mostrar as estatisticas de cada jogador mas em cada competiçao em particular.
+2Os jogadores devem ser identificados pelo IDU individual e os seus dados serem juntos aos seus dados da folha Jogadores quando exisitirem nos dois ficheiros
+2.1 Ha colunas com o mesmo nome nos dois ficheiros mas que devem ser distuingas umas das outras como por exemplo a coluna Jogos	ou Gls
+2.2 Estes dados so serao utilizados em situaçoes e paginas muito particulares quando eu dizer.
+
+07 transferencia
+1Aqui mostra as transferencias entre clubes todos os anos, identificado os jogadores e os valores.
+2.Os jogadores aqui devem ser identificados pelo Nome e clube de origem
+3.A coluna Valores
+3.1 Por vezes aparece so um valor e será esse valor a ser assumido, noustras vezes aparecera dois valores
+como por exempplo 02/06/2025	Morgan Rogers	Aston Villa	Tottenham	84M € (114M €). Nestes casoso o primeiro valor devera ser ignorado
+e apenas o valor entre parenteses () é que sera o valor a ser identificado e registado
+4. M representa Milhoes ppor exemplo 34.5M €(34 Milhoes, 34.000.000, 34M) 
+o m representa milhares por exemplo 550m € (550 mil, 550.000)
+5. Como so consigo extrair todas as transferencias de cada ano civil(janeiro a dezembro) e nao por epoca (Setembro a Maio) 
+podera surgir trasnferencias repetidas entre imports. Se alguma transfenrecia ja tiver sido registada na app a segundo import devera ignorar
+essa duplicaçao de informaçao. Devera cruz a informaçao atraves da data de transferencia, nome do jogador, valor, e clubes
+
+
+
+
+
+
+
