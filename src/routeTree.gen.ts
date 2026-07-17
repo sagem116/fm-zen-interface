@@ -20,6 +20,7 @@ import { Route as RankingHistoricoRouteImport } from './routes/ranking-historico
 import { Route as PremiosRouteImport } from './routes/premios'
 import { Route as PaisesRouteImport } from './routes/paises'
 import { Route as MinhaCarreiraRouteImport } from './routes/minha-carreira'
+import { Route as MercadoRouteImport } from './routes/mercado'
 import { Route as McpRouteImport } from './routes/mcp'
 import { Route as IntelligenceStudioRouteImport } from './routes/intelligence-studio'
 import { Route as InsightsRouteImport } from './routes/insights'
@@ -140,6 +141,11 @@ const PaisesRoute = PaisesRouteImport.update({
 const MinhaCarreiraRoute = MinhaCarreiraRouteImport.update({
   id: '/minha-carreira',
   path: '/minha-carreira',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const MercadoRoute = MercadoRouteImport.update({
+  id: '/mercado',
+  path: '/mercado',
   getParentRoute: () => rootRouteImport,
 } as any)
 const McpRoute = McpRouteImport.update({
@@ -525,6 +531,7 @@ export interface FileRoutesByFullPath {
   '/insights': typeof InsightsRoute
   '/intelligence-studio': typeof IntelligenceStudioRoute
   '/mcp': typeof McpRoute
+  '/mercado': typeof MercadoRoute
   '/minha-carreira': typeof MinhaCarreiraRoute
   '/paises': typeof PaisesRouteWithChildren
   '/premios': typeof PremiosRoute
@@ -603,6 +610,7 @@ export interface FileRoutesByTo {
   '/insights': typeof InsightsRoute
   '/intelligence-studio': typeof IntelligenceStudioRoute
   '/mcp': typeof McpRoute
+  '/mercado': typeof MercadoRoute
   '/minha-carreira': typeof MinhaCarreiraRoute
   '/premios': typeof PremiosRoute
   '/ranking-historico': typeof RankingHistoricoRoute
@@ -681,6 +689,7 @@ export interface FileRoutesById {
   '/insights': typeof InsightsRoute
   '/intelligence-studio': typeof IntelligenceStudioRoute
   '/mcp': typeof McpRoute
+  '/mercado': typeof MercadoRoute
   '/minha-carreira': typeof MinhaCarreiraRoute
   '/paises': typeof PaisesRouteWithChildren
   '/premios': typeof PremiosRoute
@@ -762,6 +771,7 @@ export interface FileRouteTypes {
     | '/insights'
     | '/intelligence-studio'
     | '/mcp'
+    | '/mercado'
     | '/minha-carreira'
     | '/paises'
     | '/premios'
@@ -840,6 +850,7 @@ export interface FileRouteTypes {
     | '/insights'
     | '/intelligence-studio'
     | '/mcp'
+    | '/mercado'
     | '/minha-carreira'
     | '/premios'
     | '/ranking-historico'
@@ -917,6 +928,7 @@ export interface FileRouteTypes {
     | '/insights'
     | '/intelligence-studio'
     | '/mcp'
+    | '/mercado'
     | '/minha-carreira'
     | '/paises'
     | '/premios'
@@ -997,6 +1009,7 @@ export interface RootRouteChildren {
   InsightsRoute: typeof InsightsRoute
   IntelligenceStudioRoute: typeof IntelligenceStudioRoute
   McpRoute: typeof McpRoute
+  MercadoRoute: typeof MercadoRoute
   MinhaCarreiraRoute: typeof MinhaCarreiraRoute
   PaisesRoute: typeof PaisesRouteWithChildren
   PremiosRoute: typeof PremiosRoute
@@ -1106,6 +1119,13 @@ declare module '@tanstack/react-router' {
       path: '/minha-carreira'
       fullPath: '/minha-carreira'
       preLoaderRoute: typeof MinhaCarreiraRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/mercado': {
+      id: '/mercado'
+      path: '/mercado'
+      fullPath: '/mercado'
+      preLoaderRoute: typeof MercadoRouteImport
       parentRoute: typeof rootRouteImport
     }
     '/mcp': {
@@ -1678,6 +1698,7 @@ const rootRouteChildren: RootRouteChildren = {
   InsightsRoute: InsightsRoute,
   IntelligenceStudioRoute: IntelligenceStudioRoute,
   McpRoute: McpRoute,
+  MercadoRoute: MercadoRoute,
   MinhaCarreiraRoute: MinhaCarreiraRoute,
   PaisesRoute: PaisesRouteWithChildren,
   PremiosRoute: PremiosRoute,
