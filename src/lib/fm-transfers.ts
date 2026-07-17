@@ -123,6 +123,16 @@ export function parseValue(raw: unknown): number {
   text = text.replace(/[€$£¥\u00A0]/g, "").trim();
   if (!text) return 0;
 
+  // Parenthesized value takes precedence: "84M (114M)" → 114M.
+  // FM exports use the parentheses to indicate the effective transfer value.
+  const parenMatch = text.match(/\(([^()]+)\)\s*$/);
+  if (parenMatch) {
+    const inner = parseValue(parenMatch[1]);
+    if (inner > 0) return inner;
+    text = text.replace(/\([^()]*\)\s*$/, "").trim();
+    if (!text) return 0;
+  }
+
   // Range like "€500K - €1M" or "500 mil – 1 milhão" → midpoint.
   const rangeMatch = text.match(/^(.+?)\s*[-–—]\s*(.+)$/);
   if (rangeMatch && !/^\s*-\s*\d/.test(text)) {
