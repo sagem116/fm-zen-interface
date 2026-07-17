@@ -21,6 +21,7 @@ import {
   Bug,
   History as HistoryIcon,
   GitCompareArrows,
+  ArrowLeftRight,
   ChevronDown,
   SlidersHorizontal,
   BarChart3,
@@ -81,6 +82,7 @@ const NAV_GROUPS: NavGroup[] = [
       { to: "/ranking-historico", label: "Histórico de Rankings", icon: HistoryIcon },
       { to: "/hall-of-fame", label: "Hall of Fame", icon: Crown },
       { to: "/dominio", label: "Domínio", icon: Crown },
+      { to: "/mercado", label: "Mercado", icon: ArrowLeftRight },
       {
         to: "/national/estatisticas-ligas",
         label: "Estatísticas Ligas Nacionais",
