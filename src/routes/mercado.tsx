@@ -56,8 +56,7 @@ function MercadoPage() {
   const reset = useCallback(() => setFilters(DEFAULT_FILTERS), []);
 
   return (
-    <AppShell>
-      <div className="mx-auto max-w-7xl space-y-5 p-6">
+    <div className="mx-auto max-w-7xl space-y-5 p-6">
         <header className="flex flex-wrap items-start justify-between gap-3">
           <div>
             <h1 className="text-2xl font-semibold tracking-tight">Mercado</h1>
@@ -119,7 +118,6 @@ function MercadoPage() {
             </TabsContent>
           ))}
         </Tabs>
-      </div>
-    </AppShell>
+    </div>
   );
 }
