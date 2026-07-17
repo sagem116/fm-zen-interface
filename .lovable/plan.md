@@ -1,78 +1,79 @@
-# Mercado de Transferências das Competições
+## Módulo Mercado — Rankings de Transferências
 
-Módulo determinístico (sem IA) disponível no perfil de qualquer competição: Super League, Ligas Nacionais, Competições Continentais e Competições Internacionais. Todos os indicadores calculados a partir das transferências existentes, com histórico por época e agregado total.
+Nova página `/mercado` isolada dos módulos existentes, com 3 tabs (Competição, Clube, Treinador) sobre os dados já persistidos em `transfers`.
 
-## Arquitetura (partilhada entre fases)
-
-Um único módulo `src/lib/competition-market/` cobre carregamento de dados, agregação e classificações.
+### Arquitetura
 
 ```
-src/lib/competition-market/
-  types.ts            → tipos partilhados (Scope, MarketDataset, ...)
-  data.ts             → useCompetitionMarket(name, scope) — carrega transfers + player_profiles + standings + coach_assignments filtrados por competição/época
-  aggregate.ts        → normalizações comuns (por época + agregado)
-  origin.ts           → origem/destino, países parceiros, mercado interno vs externo
-  players.ts          → nacionalidades, perfil etário, técnico, posicional
-  finance.ts          → fluxo financeiro, ROI, margens
-  clubs.ts            → ranking de clubes ativos
-  talent.ts           → exportação/importação de talento, jovens/pico/veteranos
-  identity.ts         → 12 classificações da secção 1 + 16 tags "Inteligência de Mercado"
+src/lib/market-rankings/
+  service.ts          -> fetch + índices (transfers, standings, clubs, countries, coach_assignments, player_profiles)
+  compute.ts          -> agregações por competição / clube / treinador com filtros
+  narrative.ts        -> geração de narrativa determinística
+  hooks.ts            -> useMarketRankings (react-query, cache 10min)
+  types.ts
+
+src/components/market/
+  MarketFilters.tsx   -> Época (intervalo), País, Continente, Competição, Tipo
+  MarketTable.tsx     -> tabela reutilizável (7 colunas)
+  MarketNarrative.tsx -> narrative + explain mode
+
+src/routes/mercado.tsx  -> página com tabs
 ```
 
-UI vive em `src/components/profile/tabs/competition/CompetitionMarketTab.tsx` com sub-navegação interna (as 16 secções agrupadas em 6 grupos de UI: Identidade · Fluxo · Origem & Destino · Perfil · Financeiro · Inteligência). Registada em `src/components/profile/tabs/index.tsx` com `kinds: ["competition"]`.
+Sidebar: nova entrada em NAV_GROUPS na secção "Rankings" com ícone `ArrowLeftRight` (lucide) apontando para `/mercado`.
 
-## Dados usados
+### Modelo de dados / cálculos
 
-- `transfers` (person_type='player') — colunas: from_club_name, to_club_name, value, season_year, person_name.
-- `player_profiles` — CA, PA, VP, idade, altura, peso, nacionalidade, continente, posição.
-- `standings` — resolve clubes da competição por época (`competition`, `module`).
-- `coach_assignments` — resolve continental/international (competição → clubes participantes).
-- `clubs` / `countries` — join club→país/continente para origem/destino/parceiros.
+Fonte única: `transfers` (já existente, com value normalizado por `parseValue`). Cada transferência é lida uma vez.
 
-Perfis continentais e internacionais definem "clubes da competição" via `continental_results` / `international_results` para essa época; nacionais/super league via `standings.competition`.
+Contexto por transferência:
+- `buyerCompetition/country/continent`: derivado de `standings(season_year, club_name)` → competição do clube nessa época; fallback `clubs.country_id → countries.name`, `clubs.continent`.
+- `sellerCompetition/country/continent`: idem sobre `from_club_name`.
+- `age`: `player_profiles(player_name, season_year).age`.
+- `coach` do lado comprador/vendedor: `coach_assignments(club_name, season_year)`.
 
-Todos os indicadores devolvem `{ value, byYear[], evolution, sources: string[] }` — cada classificação regista quais métricas a originaram (requisito do utilizador).
+Filtros aplicados aos rows agregados (ranking):
+- `seasonFrom/seasonTo` — restringe transferências.
+- `country` / `continent` / `competition` — filtra a chave do grupo (ex: só competições em Portugal).
+- `type`:
+  - `all`: total = compras + vendas
+  - `buys`: valor de transferências onde a entidade é o comprador
+  - `sales`: valor de transferências onde a entidade é o vendedor
+  - `net`: compras − vendas
 
-## Faseamento proposto
+Colunas (todas as tabs):
+1. Pos.
+2. Nome (link para perfil quando aplicável)
+3. Valor total transferências
+4. Valor médio (só sobre transferências com valor > 0)
+5. Maior transferência única
+6. Idade média (inclui transferências sem valor)
+7. Saldo compras/vendas
 
-### Fase A — Fundação + Fluxo (secções 2, 3, 4, 12)
-- Resolução dos clubes da competição por época + query única (bulk).
-- Fluxo global: compras, vendas, saldo jogadores/financeiro, médias, maiores, maior janela, evolução anual.
-- Origem/destino: rankings por país, continente, competição, divisão, clube.
-- Clubes mais ativos: rankings de compras/vendas/investimento/saldo.
+Regra de valores: `parseValue` já garante normalização K/M/B; para strings tipo `"84M € (114M €)"` a função actual normaliza numérico após remover símbolos — vou reforçar no parser para preferir o valor entre parênteses quando existir (regra pedida pelo user).
 
-### Fase B — Perfis (secções 5, 6, 7, 8, 10, 11)
-- Nacionalidades preferidas (contratadas + vendidas): número, %, valor, CA, PA, idade, reputação.
-- Perfil etário (7 buckets) + classificação automática.
-- Perfil técnico (CA/PA/reputação/valor/altura/peso/experiência internacional).
-- Perfil posicional detalhado (GR/DD/DC/DE/MDC/MC/MO/ED/EE/PL) + grupos + classificação "investe mais em defesa/meio/ataque".
-- Tipo de contratações (livre, empréstimo, definitiva, fim contrato, regresso, promoção da formação) — inferido de `value=0`, `from_club_name` nulo/marcado, transição intra-clube.
-- Mercado interno vs externo (dentro da própria liga, nacional, continental, intercontinental).
+Tab **Competição**: agrupa por `competition` (via standings). Compras = transferências para clubes-membros; Vendas = de clubes-membros.
 
-### Fase C — Financeiro + Talento (secções 9, 13, 14, 15)
-- Perfil financeiro: ROI, margem, eficiência, rentabilidade, lucro/perda.
-- Países parceiros: mapa fornecedor/recetor + histórico.
-- Exportação de talento (jovens/pico/veteranos vendidos).
-- Importação de talento (experientes, estrelas, jovens promissores, wonderkids, veteranos).
+Tab **Clube**: agrupa por `to_club_name`/`from_club_name` normalizado. Nome linka `/clubes/:name`.
 
-### Fase D — Identidade + Inteligência (secções 1, 16)
-- 12 classificações da secção 1 (Importadora, Exportadora, Formadora, Compradora, Vendedora, Desenvolvimento, Veteranos, Estrelas, Revenda, Conservadora, Agressiva, Equilibrada) — cada uma com score, percentil calculado no universo de competições, explicação e evolução histórica.
-- 16 tags de "Inteligência de Mercado" com fontes explícitas (métricas que produziram a conclusão).
-- Percentis calculados uma única vez sobre todas as competições e cacheados via TanStack Query.
+Tab **Treinador**: para cada `coach_assignment(coach, club, season)` atribui transferências desse clube nessa época ao treinador. Nome linka `/treinadores/:name`.
 
-## Detalhes técnicos
+### Narrative Mode
 
-- Todas as agregações são feitas em memória a partir de queries bulk (mesmo padrão de `useCoachRoster` + `useCoachUniverse` da Fase A/B do perfil de treinador).
-- Cache TanStack Query por (nome_competição, âmbito), stale 10min.
-- Zero alterações a Engines, Rankings, Scores ou schema da BD.
-- Todas as classificações e tags emitem `reason` + `metric` visíveis no UI (nunca conclusão sem justificação).
+Gerado por `narrative.ts` a partir dos agregados: 3–5 frases contextualizando o líder do ranking (maior spend, idade média vs global, agressividade de mercado). Sem AI, texto template determinístico com valores reais.
 
-## Fora do âmbito
+### Performance
 
-- Não altera Engines, Rankings, Scores ou o perfil de outras entidades.
-- Não introduz nova rota — vive dentro do perfil de competição já existente.
-- Não altera fluxos de importação.
+- Uma única query batch por hook (Promise.all) → índices em memória.
+- Agregação em `useMemo` com filtros.
+- `react-query` com `staleTime: 10min`.
+- Tabela usa virtualização se lista > 100 rows (via `@tanstack/react-virtual`, já usado no projeto).
 
-## Confirmação
+### Histórico (fase futura)
 
-Podemos avançar com a **Fase A** já ou preferes que revejamos algum ponto do plano primeiro? Se aprovares, prossigo com o carregamento de dados, secções 2–4 e 12 no próximo turno.
+`compute.ts` já produz agregados por (grupo, temporada); guardar isto em cache local (`localStorage`) por hash de filtros permite evolução temporal — deixo o gancho pronto mas UI de evolução fica para depois.
+
+### Fora de scope
+
+- Não altera `fm-transfers.ts` (só o parser ganha regra `()` — mudança mínima e coberta por teste novo).
+- Não toca em `competition-market/*`, rankings mundiais, scores, etc.
